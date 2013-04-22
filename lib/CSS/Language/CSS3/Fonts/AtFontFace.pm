@@ -1,8 +1,12 @@
-use CSS::Grammar::CSS3;
+use v6;
 
+grammar CSS::Language::CSS3::Fonts::AtFontFace {...}
+
+use CSS::Language::CSS3::Fonts::Variants;
 use CSS::Language::CSS3::_Base;
 
 grammar CSS::Language::CSS3::Fonts::AtFontFace
+    is CSS::Language::CSS3::Fonts::Variants
     is CSS::Language::CSS3::_Base {
 
     # @font-face declarations
@@ -27,7 +31,7 @@ grammar CSS::Language::CSS3::Fonts::AtFontFace
     rule decl:sym<font-style> {:i (font\-style) ':'  [ [ normal | italic | oblique ] & <keyw> || <any-args> ] }
 
     # - font-variant: normal | [ <common-lig-values> || <discretionary-lig-values> || <historical-lig-values> || <contextual-alt-values> || stylistic(<feature-value-name>) || historical-forms || styleset(<feature-value-name>#) || character-variant(<feature-value-name>#) || swash(<feature-value-name>) || ornaments(<feature-value-name>) || annotation(<feature-value-name>) || [ small-caps | all-small-caps | petite-caps | all-petite-caps | unicase | titling-caps ] || <numeric-figure-values> || <numeric-spacing-values> || <numeric-fraction-values> || ordinal || slashed-zero || <east-asian-variant-values> || <east-asian-width-values> || ruby ]
-    rule decl:sym<font-variant> {:i (font\-variant) ':'  [ normal & <keyw> | [ [ <common-lig-values> | <discretionary-lig-values> | <historical-lig-values> | <contextual-alt-values> | <stylistic> | historical\-forms & <keyw> | <styleset> | <character-variant> | <swash> | <ornaments> | <annotation> | [ [ small\-caps | all\-small\-caps | petite\-caps | all\-petite\-caps | unicase | titling\-caps ] & <keyw> ] | <numeric-figure-values> | <numeric-spacing-values> | <numeric-fraction-values> | ordinal & <keyw> | slashed\-zero & <keyw> | <east-asian-variant-values> | <east-asian-width-values> | ruby & <keyw> ]**1..20 ] || <any-args> ] }
+    rule decl:sym<font-variant> {:i (font\-variant) ':'  [ normal & <keyw> | [ [ <common-lig-values> | <discretionary-lig-values> | <historical-lig-values> | <contextual-alt-values> | <stylistic> | historical\-forms & <keyw> | <styleset> | <character-variant> | <swash> | <ornaments> | <annotation> | [ [ small\-caps | all\-small\-caps | petite\-caps | all\-petite\-caps | unicase | titling\-caps ] & <keyw> ] | <numeric-figure-values> | <numeric-spacing-values> | <numeric-fraction-values> | ordinal & <keyw> | slashed\-zero & <keyw> | <east-asian-variant-values> | <east-asian-width-values> | ruby & <keyw> | ',' ]**1..20 ] || <any-args> ] }
 
     # - font-weight: normal | bold | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900
     rule decl:sym<font-weight> {:i (font\-weight) ':'  [ [ normal | bold ] & <keyw> | [ 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 ] & <number> || <any-args> ] }

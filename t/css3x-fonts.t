@@ -24,6 +24,9 @@ for (
                                                                       "src" => {"uri" => "gentium.ttf", "format" => "truetype"}]}},
                           "\@" => "font-face"},
     },
+    decl     => {input => 'font-variant: small-caps'},
+    decl     => {input => 'font-variant: annotation(circled)'},
+    decl     => {input => 'font-variant: discretionary-ligatures, character-variant(leo-B, leo-M, leo-N, leo-T, leo-U)'},
     ) {
     my $rule = $_.key;
     my %test = $_.value;
