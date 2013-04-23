@@ -9,8 +9,8 @@ grammar CSS::Language::CSS3::_Base
         token number      {<num> <!before ['%'|\w]>}
         token uri         {<url>}
         token keyw        {<ident>}           # keywords (case insensitive)
-        token identifier  {<ident-cs>}        # identifiers (case sensitive)
-        rule identifiers  {[ <identifier> ]+} # sequences of identifiers
+        token identifier  {<name>}            # identifiers (case sensitive)
+        rule identifiers  {[ <identifier> ]+} # sequence of identifiers
 }
 
 class CSS::Language::CSS3::_Base::Actions 
