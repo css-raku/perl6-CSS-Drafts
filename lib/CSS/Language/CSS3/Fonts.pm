@@ -24,14 +24,15 @@ grammar CSS::Language::CSS3::Fonts:ver<20130212.000>
     # Initial generation:
     # % etc/gen-properties.pl gen grammar etc/css3x-font-properties.txt
     # - font: [ [ <‘font-style’> || <font-variant-css21> || <‘font-weight’> || <‘font-stretch’> ]? <‘font-size’> [ / <‘line-height’> ]? <‘font-family’> ] | caption | icon | menu | message-box | small-caption | status-bar
-    rule decl:sym<font> {:i (font) ':'  [ [ [ [ <font-style> | <font-variant-css21> | <font-weight> | <font-stretch> ]**1..4 ]? <font-size> [ '/ ' <line-height> ]? <font-family> ] | [ caption | icon | menu | message\-box | small\-caption | status\-bar ] & <keyw> || <any-args> ] }
+    rule decl:sym<font> {:i (font) ':'  [ [ [ <font-style> | <font-variant-css21> | <font-weight> | <font-stretch> ]**0..4 <font-size> [ '/ ' <line-height> ]? <font-family> ] [ ',' <font-family> ]* | [ caption | icon | menu | message\-box | small\-caption | status\-bar ] & <keyw> || <any-args> ] }
 
     # - font-family: [ <family-name> | <generic-family> ]#
-    token font-family {:i [ <family-name> | <generic-family> ] }
-    rule decl:sym<font-family> {:i (font\-family) ':'  [ <font-family> | inherit || <any-args> ] }
+    rule font-family {:i [ serif | sans\-serif | cursive | fantasy | monospace ] & <generic-family=.keyw> || <family-name=.identifiers> | <family-name=.string> }
+    rule decl:sym<font-family> {:i (font\-family) ':' [ <font-family> [ ',' <font-family> || <any> ]*
+                                                        | <inherit> || <any-args> ] }
 
     # - font-feature-settings: normal | <feature-tag-value>#
-    rule decl:sym<font-feature-settings> {:i (font\-feature\-settings) ':'  [ normal & <keyw> | <feature-tag-value> || <any-args> ] }
+    rule decl:sym<font-feature-settings> {:i (font\-feature\-settings) ':'  [ normal & <keyw> | [ <feature-tag-value> [ ',' <feature-tag-value> ]* ] || <any-args> ] }
 
     # - font-kerning: auto | normal | none
     rule decl:sym<font-kerning> {:i (font\-kerning) ':'  [ [ auto | normal | none ] & <keyw> || <any-args> ] }
@@ -58,7 +59,7 @@ grammar CSS::Language::CSS3::Fonts:ver<20130212.000>
     rule decl:sym<font-synthesis> {:i (font\-synthesis) ':'  [ none & <keyw> | [ [ [ weight | style ] & <keyw> ]**1..2 ] || <any-args> ] }
 
     # - font-variant: normal | none | [ <common-lig-values> || <discretionary-lig-values> || <historical-lig-values> || <contextual-alt-values> || stylistic(<feature-value-name>) || historical-forms || styleset(<feature-value-name>#) || character-variant(<feature-value-name>#) || swash(<feature-value-name>) || ornaments(<feature-value-name>) || annotation(<feature-value-name>) || [ small-caps | all-small-caps | petite-caps | all-petite-caps | unicase | titling-caps ] || <numeric-figure-values> || <numeric-spacing-values> || <numeric-fraction-values> || ordinal || slashed-zero || <east-asian-variant-values> || <east-asian-width-values> || ruby ]
-    rule decl:sym<font-variant> {:i (font\-variant) ':'  [ [ normal | none ] & <keyw> | [ [ <common-lig-values> | <discretionary-lig-values> | <historical-lig-values> | <contextual-alt-values> | <stylistic> | historical\-forms & <keyw> | <styleset> | <character-variant> | <swash> | <ornaments> | <annotation> | [ [ small\-caps | all\-small\-caps | petite\-caps | all\-petite\-caps | unicase | titling\-caps ] & <keyw> ] | <numeric-figure-values> | <numeric-spacing-values> | <numeric-fraction-values> | ordinal & <keyw> | slashed\-zero & <keyw> | <east-asian-variant-values> | <east-asian-width-values> | ruby & <keyw>  | ',' ]**1..20 ] || <any-args> ] }
+    rule decl:sym<font-variant> {:i (font\-variant) ':'  [ [ [ normal | none ] & <keyw> | [ [ <common-lig-values> | <discretionary-lig-values> | <historical-lig-values> | <contextual-alt-values> | <stylistic> | historical\-forms & <keyw> | <styleset> | <character-variant> | <swash> | <ornaments> | <annotation> | [ [ small\-caps | all\-small\-caps | petite\-caps | all\-petite\-caps | unicase | titling\-caps ] & <keyw> ] | <numeric-figure-values> | <numeric-spacing-values> | <numeric-fraction-values> | ordinal & <keyw> | slashed\-zero & <keyw> | <east-asian-variant-values> | <east-asian-width-values> | ruby & <keyw> ] ','? ]**1..20 ] || <any-args> ] }
 
     # - font-variant-alternates: normal | [ stylistic(<feature-value-name>) || historical-forms || styleset(<feature-value-name>#) || character-variant(<feature-value-name>#) || swash(<feature-value-name>) || ornaments(<feature-value-name>) || annotation(<feature-value-name>) ]
     rule decl:sym<font-variant-alternates> {:i (font\-variant\-alternates) ':'  [ normal & <keyw> | [ [ <stylistic> | historical\-forms & <keyw> | <styleset> | <character-variant> | <swash> | <ornaments> | <annotation> ]**1..7 ] || <any-args> ] }
