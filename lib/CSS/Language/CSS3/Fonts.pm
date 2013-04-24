@@ -24,7 +24,11 @@ grammar CSS::Language::CSS3::Fonts:ver<20130212.000>
     # Initial generation:
     # % etc/gen-properties.pl gen grammar etc/css3x-font-properties.txt
     # - font: [ [ <‘font-style’> || <font-variant-css21> || <‘font-weight’> || <‘font-stretch’> ]? <‘font-size’> [ / <‘line-height’> ]? <‘font-family’> ] | caption | icon | menu | message-box | small-caption | status-bar
-    rule decl:sym<font> {:i (font) ':'  [ [ [ <font-style> | <font-variant-css21> | <font-weight> | <font-stretch> ]**0..4 <font-size> [ '/ ' <line-height> ]? <font-family> ] [ ',' <font-family> ]* | [ caption | icon | menu | message\-box | small\-caption | status\-bar ] & <keyw> || <any-args> ] }
+    token font-variant-css21 {:i [ normal | small\-caps ] & <keyw>}
+    rule  decl:sym<font> {:i (font) ':' [
+                              [ <font-style> | <font-variant=.font-variant-css21> | <font-weight> | <font-stretch> ]**0..4 <font-size> [ '/' <line-height> ]? <font-family> [ ',' <font-family> ]*
+                              | [ caption | icon | menu | message\-box | small\-caption | status\-bar ] & <keyw>
+                              || <any-args> ] }
 
     # - font-family: [ <family-name> | <generic-family> ]#
     rule font-family {:i [ serif | sans\-serif | cursive | fantasy | monospace ] & <generic-family=.keyw> || <family-name=.identifiers> | <family-name=.string> }
@@ -41,6 +45,8 @@ grammar CSS::Language::CSS3::Fonts:ver<20130212.000>
     rule decl:sym<font-language-override> {:i (font\-language\-override) ':'  [ normal & <keyw> | <string> || <any-args> ] }
 
     # - font-size: <absolute-size> | <relative-size> | <length> | <percentage>
+    token absolute-size {:i [ [[xx|x]\-]?small | medium | [[xx|x]\-]?large ] & <keyw> }
+    token relative-size {:i [ larger | smaller ] & <keyw> }
     token font-size {:i <absolute-size> | <relative-size> | <length> | <percentage> }
     rule decl:sym<font-size> {:i (font\-size) ':'  [ <font-size> | inherit || <any-args> ] }
 
@@ -83,9 +89,16 @@ grammar CSS::Language::CSS3::Fonts:ver<20130212.000>
     token font-weight {:i [ normal | bold | bolder | lighter ] & <keyw> | [ 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 ] & <number> }
     rule decl:sym<font-weight> {:i (font\-weight) ':'  [ <font-weight> | inherit || <any-args> ] }
 
+    # - line-height: normal | <number> | <length> | <percentage> | inherit
+    token line-height {:i normal & <keyw> | <number> | <length> | <percentage> }
+    rule decl:sym<line-height> {:i (line\-height) ':' [ <line-height>
+                                                        | <inherit> || <any-args> ]}
 }
 
-class CSS::Language::CSS3::Fonts::Actions 
+# ----------------------------------------------------------------------
+
+class CSS::Language::CSS3::Fonts::Actions
+    is  CSS::Language::CSS3::Fonts::Variants::Actions
     is CSS::Language::CSS3::_Base::Actions {
 
     method at-rule:sym<font-face>($/) { make $.at-rule($/) }
@@ -108,13 +121,8 @@ class CSS::Language::CSS3::Fonts::Actions
 
     # ---- Properties ----
 
-    method src($/) { make $.node($/) }
-    method decl:sym<src>($/) {
-        make $._make_decl($/, '<uri> [format(<string>#)]? | <font-face-name>');
-    }
-
-    method decl:sym<font-size-adjust>($/) {
-        make $._make_decl($/, '<none> | <auto> | <number>');
+    method decl:sym<font>($/) {
+        $._make_decl($/, q{[ [ <‘font-style’> || <font-variant-css21> || <‘font-weight’> || <‘font-stretch’> ]? <‘font-size’> [ / <‘line-height’> ]? <‘font-family’> ] | caption | icon | menu | message-box | small-caption | status-bar});
     }
 
     method font-family($/) { make $.list($/) }
@@ -122,8 +130,85 @@ class CSS::Language::CSS3::Fonts::Actions
         $._make_decl($/, '[[<family-name> | <generic-family>],]* [<family-name> | <generic-family>]', :body($<font-family>));
     }
 
+    method decl:sym<font-feature-settings>($/) {
+        $._make_decl($/, q{normal | <feature-tag-value>#});
+    }
+
+    method decl:sym<font-kerning>($/) {
+        $._make_decl($/, q{auto | normal | none});
+    }
+
+    method decl:sym<font-language-override>($/) {
+        $._make_decl($/, q{normal | <string>});
+    }
+
+    method absolute-size($/) { make $.token($<keyw>.ast) }
+    method relative-size($/) { make $.token($<keyw>.ast) }
+    method font-size($/) { make $.list($/) }
+    method decl:sym<font-size>($/) {
+        $._make_decl($/, q{<absolute-size> | <relative-size> | <length> | <percentage>}, :body($<font-size>));
+    }
+
+    method decl:sym<font-size-adjust>($/) {
+        make $._make_decl($/, '<none> | <auto> | <number>');
+    }
+
+    method font-stretch($/) { make $.list($/) }
+    method decl:sym<font-stretch>($/) {
+        $._make_decl($/, q{normal | ultra-condensed | extra-condensed | condensed | semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded}, :body($<font-stretch>));
+    }
+
+    method font-style($/) { make $.list($/) }
+    method decl:sym<font-style>($/) {
+        $._make_decl($/, q{normal | italic | oblique}, :body($<font-style>));
+    }
+
     method decl:sym<font-synthesis>($/) {
         make $._make_decl($/, '<none> | [ weight || style ]');
+    }
+
+    method font-variant-css21($/) { make $.list($/) }
+    method decl:sym<font-variant>($/) {
+        $._make_decl($/, q{normal | none | [ <common-lig-values> || <discretionary-lig-values> || <historical-lig-values> || <contextual-alt-values> || stylistic(<feature-value-name>) || historical-forms || styleset(<feature-value-name>#) || character-variant(<feature-value-name>#) || swash(<feature-value-name>) || ornaments(<feature-value-name>) || annotation(<feature-value-name>) || [ small-caps | all-small-caps | petite-caps | all-petite-caps | unicase | titling-caps ] || <numeric-figure-values> || <numeric-spacing-values> || <numeric-fraction-values> || ordinal || slashed-zero || <east-asian-variant-values> || <east-asian-width-values> || ruby ]});
+    }
+
+    method decl:sym<font-variant-alternates>($/) {
+        $._make_decl($/, q{normal | [ stylistic(<feature-value-name>) || historical-forms || styleset(<feature-value-name>#) || character-variant(<feature-value-name>#) || swash(<feature-value-name>) || ornaments(<feature-value-name>) || annotation(<feature-value-name>) ]});
+    }
+
+    method decl:sym<font-variant-caps>($/) {
+        $._make_decl($/, q{normal | small-caps | all-small-caps | petite-caps | all-petite-caps | unicase | titling-caps});
+    }
+
+    method decl:sym<font-variant-east-asian>($/) {
+        $._make_decl($/, q{normal | [ <east-asian-variant-values> || <east-asian-width-values> || ruby ]});
+    }
+
+    method decl:sym<font-variant-ligatures>($/) {
+        $._make_decl($/, q{normal | none | [ <common-lig-values> || <discretionary-lig-values> || <historical-lig-values> || <contextual-alt-values> ]});
+    }
+
+    method decl:sym<font-variant-numeric>($/) {
+        $._make_decl($/, q{normal | [ <numeric-figure-values> || <numeric-spacing-values> || <numeric-fraction-values> || ordinal || slashed-zero ]});
+    }
+
+    method decl:sym<font-variant-position>($/) {
+        $._make_decl($/, q{normal | sub | super});
+    }
+
+    method font-weight($/) { make $.list($/) }
+    method decl:sym<font-weight>($/) {
+        $._make_decl($/, q{normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900}, :body($<font-weight>));
+    }
+
+    method line-height($/) { make $.list($/); }
+    method decl:sym<line-height>($/) {
+        $._make_decl($/, 'normal | <number> | <length> | <percentage>');
+    }
+
+    method src($/) { make $.node($/) }
+    method decl:sym<src>($/) {
+        make $._make_decl($/, '<uri> [format(<string>#)]? | <font-face-name>');
     }
 
 }

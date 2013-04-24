@@ -23,3 +23,29 @@ grammar CSS::Language::CSS3::Fonts::Variants {
         rule east-asian-variant-values {:i [ jis78 | jis83 | jis90 | jis04 | simplified | traditional ] & <keyw> }
         rule east-asian-width-values   {:i [ full\-width | proportional\-width ] & <keyw> }
 }
+
+# ----------------------------------------------------------------------
+
+class CSS::Language::CSS3::Fonts::Variants::Actions {
+
+    method feature-value-name($/) { make $<identifier>.ast }
+    method feature-value-list($/) { make $.list($/) }
+
+    method annotation($/) { make $.node($/) }
+    method character-variant($/) { make $.node($/) }
+    method ornaments($/) { make $.node($/) }
+    method stylistic($/) { make $.node($/) }
+    method styleset($/) { make $.node($/) }
+    method swash($/) { make $.node($/) }
+
+    method common-lig-values($/) { make $<keyw>.ast }
+    method discretionary-lig-values($/) { make $<keyw>.ast }
+    method historical-lig-values($/) { make $<keyw>.ast }
+    method contextul-alt-values($/) { make $<keyw>.ast }
+    method numeric-figure-values($/) { make $<keyw>.ast }
+    method numeric-spacing-values($/) { make $<keyw>.ast }
+    method numeric-fraction-values($/) { make $<keyw>.ast }
+    method east-asian-variant-values($/) { make $<keyw>.ast }
+    method  east-asian-width-values($/) { make $<keyw>.ast }
+
+}

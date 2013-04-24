@@ -18,8 +18,8 @@ in the following classes
 
 To Do
 =====
-- ~~ Colors~~
-- Fonts (big!!)
+~~- Colors~~
+~~- Fonts~~
 - Namespaces
 - Selectors
 - Media
