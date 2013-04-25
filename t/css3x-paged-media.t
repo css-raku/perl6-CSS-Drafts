@@ -4,24 +4,14 @@ use Test;
 
 use CSS::Grammar::CSS3;
 use CSS::Grammar::Actions;
-use CSS::Language::CSS3::PagedMedia;
+use CSS::Language::CSS3;
 
 # prepare our own composite class with paged media extensions
-
-grammar t::CSS3::PagedMediaGrammar
-    is CSS::Language::CSS3::PagedMedia
-    is CSS::Grammar::CSS3
-    {};
-
-class t::CSS3::PagedMediaActions
-    is CSS::Language::CSS3::PagedMedia::Actions
-    is CSS::Grammar::Actions
-    {};
 
 use lib '.';
 use t::AST;
 
-my $css_actions = t::CSS3::PagedMediaActions.new;
+my $css_actions = CSS::Language::CSS3::Actions.new;
 
 my $top_center = 'page { color: red;
         @top-center {
@@ -29,22 +19,17 @@ my $top_center = 'page { color: red;
        }
 }';
 
-my $top_center_ast = {"declarations" => {"color" => {"expr" => ["term" => "red"]},
+my $top_center_ast = {"declarations" => {"color" => {"expr" => ["color" => {"r" => 255, "g" => 0, "b" => 0}]},
                                          "\@top-center" => {"margin-box" => {"box-vpos" => "top", "box-center" => "center"},
-                                                            "declarations" => {"content" => {"expr" => ["term" => "Page ",
-                                                                                                        "term" => {"ident" => "counters", "args" => ["term" => "page",
-                                                                                                                                                     "operator" => ",",
-                                                                                                                                                     "term" => "."]}
-                                                                                                 ]}}}
-                      },
-                      '@' => "page"};
+                                                            "declarations" => {"content" => {"expr" => ["string" => "Page ", "counters" => {"identifier" => "page", "string" => "."}]}}}}
+                      , "\@" => "page"};
 
 for (
     at-rule   => {input => 'page :left { margin-left: 4cm; }',
-                  ast => {"page" => "left", "declarations" => {"margin-left" => {"expr" => ["term" => 4]}}, "\@" => "page"},
+                  ast => {"page" => "left", "declarations" => {"margin-left" => {"expr" => ["length" => 4]}}, "\@" => "page"},
     },
     at-rule   => {input => 'page :junk { margin-right: 2cm }',
-                  ast => {"declarations" => {"margin-right" => {"expr" => ["term" => 2]}}, "\@" => "page"},
+                  ast => {"declarations" => {"margin-right" => {"expr" => ["length" => 2]}}, "\@" => "page"},
                   warnings => 'ignoring page pseudo: junk',
     },
     at-rule   => {input => 'page : { margin-right: 2cm }',
@@ -54,11 +39,11 @@ for (
     'page-declarations' => {input => '{@bottom-right-CorNeR {color:blue}}',
                  ast => {"\@bottom-right-corner" => {"margin-box" => {"box-vpos" => "bottom",
                                                                       "box-hpos" => "right"},
-                                                     "declarations" => {"color" => {"expr" => ["term" => "blue"]}}}},
+                                                     "declarations" => {"color" => {"expr" => ["color" => {"r" => 0, "g" => 0, "b" => 255}]}}}},
     },
     'page-declarations' => {input => '{ @Top-CENTER {content: "Page " counters(page);} }',
-                 ast => {"\@top-center" => {"margin-box" => {"box-vpos" => "top", "box-center" => "center"},
-                                           "declarations" => {"content" => {"expr" => ["term" => "Page ", "term" => {"ident" => "counters", "args" => ["term" => "page"]}]}}}},
+                            ast => {"\@top-center" => {"margin-box" => {"box-vpos" => "top", "box-center" => "center"},
+                                           "declarations" => {"content" => {"expr" => ["string" => "Page ", "counters" => {"identifier" => "page"}]}}}},
     },
     at-rule => {input => $top_center, ast => $top_center_ast},
     ) {
@@ -67,7 +52,7 @@ for (
     my $input = %test<input>;
 note $input;
     $css_actions.reset;
-    my $p3 = t::CSS3::PagedMediaGrammar.parse( $input, :rule($rule), :actions($css_actions));
+    my $p3 = CSS::Language::CSS3.parse( $input, :rule($rule), :actions($css_actions));
     t::AST::parse_tests($input, $p3, :rule($rule), :suite('css3 @page'),
                          :warnings($css_actions.warnings),
                          :expected(%test) );

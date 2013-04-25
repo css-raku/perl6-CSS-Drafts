@@ -83,7 +83,7 @@ for (
 
     $css_actions.reset;
     my $p3 = CSS::Language::CSS3::Fonts.parse( $input, :rule($rule), :actions($css_actions));
-    t::AST::parse_tests($input, $p3, :rule($rule), :suite('css3-font-composite'),
+    t::AST::parse_tests($input, $p3, :rule($rule), :suite('css3-fonts'),
                          :warnings($css_actions.warnings),
                          :expected(%test) );
 }

@@ -98,7 +98,7 @@ grammar CSS::Language::CSS3::Fonts:ver<20130212.000>
 # ----------------------------------------------------------------------
 
 class CSS::Language::CSS3::Fonts::Actions
-    is  CSS::Language::CSS3::Fonts::Variants::Actions
+    is CSS::Language::CSS3::Fonts::Variants::Actions
     is CSS::Language::CSS3::_Base::Actions {
 
     method at-rule:sym<font-face>($/) { make $.at-rule($/) }

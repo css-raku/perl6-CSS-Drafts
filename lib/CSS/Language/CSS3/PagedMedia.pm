@@ -1,5 +1,8 @@
 use v6;
 
+class CSS::Language::CSS3::PagedMedia::Actions {...}
+
+use CSS::Language::CSS3::_Base;
 # CSS3 Paged Media Module Extensions
 # - reference: http://www.w3.org/TR/2006/WD-css3-page-20061010/
 #
@@ -29,13 +32,15 @@ grammar CSS::Language::CSS3::PagedMedia::Syntax {
 }
 
 grammar CSS::Language::CSS3::PagedMedia:ver<20061010.000>
-    is CSS::Language::CSS3::PagedMedia::Syntax {
+    is CSS::Language::CSS3::PagedMedia::Syntax
+    is CSS::Language::CSS3::_Base {
 
         # nothing yet
 
 }
 
-class CSS::Language::CSS3::PagedMedia::Actions {
+class CSS::Language::CSS3::PagedMedia::Actions
+    is CSS::Language::CSS3::_Base::Actions {
 
     method page-pseudo:sym<left>($/)  {make 'left'}
     method page-pseudo:sym<right>($/) {make 'right'}
