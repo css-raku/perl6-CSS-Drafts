@@ -25,8 +25,12 @@ my $top_center_ast = {"declarations" => {"color" => {"expr" => ["color" => {"r" 
                       , "\@" => "page"};
 
 for (
-    at-rule   => {input => 'page :left { margin-left: 4cm; }',
-                  ast => {"page" => "left", "declarations" => {"margin-left" => {"expr" => ["length" => 4]}}, "\@" => "page"},
+    at-rule   => {input => 'page :left { margin-left: 4cm; size: a4 }',
+                  ast => {"page" => "left",
+                          "declarations" => {"margin-left" => {"expr" => ["length" => 4]},
+                                             "size" => {"expr" => ["page-size" => "a4"]},
+                          }
+                          , "\@" => "page"},
     },
     at-rule   => {input => 'page :junk { margin-right: 2cm }',
                   ast => {"declarations" => {"margin-right" => {"expr" => ["length" => 2]}}, "\@" => "page"},

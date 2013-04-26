@@ -16,6 +16,7 @@ grammar CSS::Language::CSS3::PagedMedia::Syntax {
     rule page-pseudo:sym<other>   {<ident>}
     rule page-pseudo:sym<missing> {''}
 
+    # @page declarations
     rule at-rule:sym<page>  {(:i'page') [\:<page=.page-pseudo>]? <declarations=.page-declarations> }
 
     rule page-declarations {
@@ -35,7 +36,15 @@ grammar CSS::Language::CSS3::PagedMedia:ver<20061010.000>
     is CSS::Language::CSS3::PagedMedia::Syntax
     is CSS::Language::CSS3::_Base {
 
-        # nothing yet
+        # ---- Properties ----#
+
+        # override for css21 size rule
+        # - size: <length>{1,2} | auto | [ <page-size> || [ portrait | landscape] ]
+        token page-size {:i [ a[3|4|5] | b[4|5] | letter | legal | ledger ] & <keyw> }
+        rule decl:sym<size> {:i (size) ':' [ <length> ** 1..2 | auto & <keyw>
+                                             | [ <page-size> | [ portrait | landscape ] & <keyw> ]**1..2
+                                             | <inherit> || <any-args> ]}
+
 
 }
 
@@ -59,5 +68,10 @@ class CSS::Language::CSS3::PagedMedia::Actions
         my %ast = $.node($/);
         %ast<property> = '@' ~ $<margin-box>.Str.lc;
         make %ast;
+    }
+
+    method page-size($/) { make $.token($<keyw>.ast) }
+    method decl:sym<size>($/) {
+        $._make_decl($/, '<length>{1,2} | auto | [ <page-size> || [ portrait | landscape] ]')
     }
 }
