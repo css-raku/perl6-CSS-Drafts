@@ -1,6 +1,6 @@
 use v6;
 
-# CSS3 Media Module Extensions
+# CSS3 Media Queries Extension Module
 # - specification: http://www.w3.org/TR/2012/REC-css3-mediaqueries-20120619/
 #
 # The CSS3 Core includes some basic CSS2.1 compatible @media at rules. This
@@ -8,11 +8,11 @@ use v6;
 #
 # -- if you want the capability to to embed '@page' rules, you'll also need
 #    to load the Paged Media extension module in your class structure.
-class CSS::Language::CSS3::Media::Actions {...}
+class CSS::Language::CSS3::MediaQueries::Actions {...}
 
 use CSS::Language::CSS3::_Base;
 
-grammar CSS::Language::CSS3::Media::Syntax {
+grammar CSS::Language::CSS3::MediaQueries::Syntax {
     rule at-rule:sym<media> {(:i'media') <media-list> <media-rules> }
 
     rule media-rules {
@@ -29,13 +29,13 @@ grammar CSS::Language::CSS3::Media::Syntax {
     token quantity:sym<resolution> {<resolution>}
 }
 
-grammar CSS::Language::CSS3::Media:ver<20120619.000>
-    is CSS::Language::CSS3::Media::Syntax
+grammar CSS::Language::CSS3::MediaQueries:ver<20120619.000>
+    is CSS::Language::CSS3::MediaQueries::Syntax
     is CSS::Language::CSS3::_Base {
         # todo properties
 }
 
-class CSS::Language::CSS3::Media::Actions
+class CSS::Language::CSS3::MediaQueries::Actions
     is CSS::Language::CSS3::_Base::Actions {
 
     # media-rules, media-list, media-query, media see core actions
