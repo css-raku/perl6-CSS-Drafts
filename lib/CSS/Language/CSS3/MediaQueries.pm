@@ -32,8 +32,6 @@ grammar CSS::Language::CSS3::MediaQueries::Syntax {
 
     rule media-expr:sym<aspect-ratio> {:i ([device\-]?aspect\-ratio) ':' [ <horizontal=.integer> '/' <vertical=.integer> || <any-args> ] }
 
-    rule media-expr:sym<bool> {:i (height|color[\-index]?|[device\-]?[width|height]|[device\-]?aspect\-ratio|monochrome|resolution|grid|none) }
-
     rule media-expr:sym<color> {:i ([min|max]\-color[\-index]?) ':' [ <integer> || <any-args> ] }
 
     rule media-expr:sym<monochrome> {:i ([min|max]\-monochrome) ':' [ <integer> || <any-args> ] }
@@ -45,6 +43,8 @@ grammar CSS::Language::CSS3::MediaQueries::Syntax {
     rule media-expr:sym<grid> {:i (grid) ':' [ [0 | 1 ] & <integer> || <any-args> ] }
 
     rule media-expr:sym<any>  { '(' <media-feature=.ident> [ ':' <expr> ]? ')' }
+
+    rule media-expr:sym<bool> {:i (height|color[\-index]?|[device\-]?[width|height]|[device\-]?aspect\-ratio|monochrome|resolution|grid|none) }
 
     token resolution {:i<num>(dpi|dpcm)}
     token quantity:sym<resolution> {<resolution>}

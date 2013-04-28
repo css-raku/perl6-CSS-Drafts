@@ -13,19 +13,19 @@ grammar CSS::Language::CSS3::Selectors::Syntax {
     token combinator:sym<sibling> {'~'}
 
     # allow '::' element selectors
-    rule pseudo:sym<element2> {'::'<element=.ident>}
+    rule pseudo:sym<::element> {'::'<element=.ident>}
  
     rule namespace-prefix {[<ident>|<wildcard>]?'|'}
     rule wildcard {'*'}
 
-    token simple-selector { <namespace-prefix>? [<element-name>|<wildcard>] [<id> | <class> | <attrib> | <pseudo>]*
+    token simple-selector { <namespace-prefix>? [<element-name>|<element-name=.wildcard>] [<id> | <class> | <attrib> | <pseudo>]*
                           | [<id> | <class> | <attrib> | <pseudo>]+ }
 
     rule type-selector {<namespace-prefix>? <element-name>}
     
     rule attrib        {'[' <ident> [ <attribute-selector> [<ident>|<string>] ]? ']'}
 
-    rule universal      {<namespace-prefix>? <wildcard>}
+    rule universal      {<namespace-prefix>? <element-name=.wildcard>}
 
     rule term:sym<unicode-range> {'U+'<unicode-range>}
 
@@ -57,6 +57,8 @@ grammar CSS::Language::CSS3::Selectors:ver<20090929.000>
 }
 
 class CSS::Language::CSS3::Selectors::Actions {
+
+    method pseudo:sym<::element>($/) { make $.node($/) }
 
     method namespace-prefix($/) { make $.node($/) }
     method wildcard($/)         { make $/.Str }
