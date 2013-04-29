@@ -15,6 +15,8 @@ use CSS::Language::CSS3::_Base;
 grammar CSS::Language::CSS3::MediaQueries::Syntax {
     rule at-rule:sym<media> {(:i'media') <media-list> <media-rules> }
 
+    rule misc { <any-args> }
+
     rule media-rules {
         '{' ['@'<?before [:i'page']><at-rule>|<ruleset>]* <.end-block>
     }
@@ -26,21 +28,21 @@ grammar CSS::Language::CSS3::MediaQueries::Syntax {
 
     proto rule media-expr {<...>}
 
-    rule media-expr:sym<width|height> {:i ([[min|max|device]\-]?[width|height]) ':' [ <length> || <any-args> ] }
+    rule media-expr:sym<width|height> {:i ([[min|max|device]\-]?[width|height]) ':' [ <length> || <misc> ] }
 
-    rule media-expr:sym<orientation> {:i (orientation) ':' [ [ portrait | landscape ] & <keyw> || <any-args> ] }
+    rule media-expr:sym<orientation> {:i (orientation) ':' [ [ portrait | landscape ] & <keyw> || <misc> ] }
 
-    rule media-expr:sym<aspect-ratio> {:i ([device\-]?aspect\-ratio) ':' [ <horizontal=.integer> '/' <vertical=.integer> || <any-args> ] }
+    rule media-expr:sym<aspect-ratio> {:i ([device\-]?aspect\-ratio) ':' [ <horizontal=.integer> '/' <vertical=.integer> || <misc> ] }
 
-    rule media-expr:sym<color> {:i ([min|max]\-color[\-index]?) ':' [ <integer> || <any-args> ] }
+    rule media-expr:sym<color> {:i ([min|max]\-color[\-index]?) ':' [ <integer> || <misc> ] }
 
-    rule media-expr:sym<monochrome> {:i ([min|max]\-monochrome) ':' [ <integer> || <any-args> ] }
+    rule media-expr:sym<monochrome> {:i ([min|max]\-monochrome) ':' [ <integer> || <misc> ] }
 
-    rule media-expr:sym<resolution> {:i ([min|max]\-resolution) ':' [ <resolution> || <any-args> ] }
+    rule media-expr:sym<resolution> {:i ([min|max]\-resolution) ':' [ <resolution> || <misc> ] }
 
-    rule media-expr:sym<scan> {:i (scan) ':' [ [ progressive | interlace] & <keyw> || <any-args> ] }
+    rule media-expr:sym<scan> {:i (scan) ':' [ [ progressive | interlace] & <keyw> || <misc> ] }
 
-    rule media-expr:sym<grid> {:i (grid) ':' [ [0 | 1 ] & <integer> || <any-args> ] }
+    rule media-expr:sym<grid> {:i (grid) ':' [ [0 | 1 ] & <integer> || <misc> ] }
 
     rule media-expr:sym<any>  { '(' <media-feature=.ident> [ ':' <expr> ]? ')' }
 

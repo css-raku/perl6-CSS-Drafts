@@ -26,73 +26,75 @@ grammar CSS::Language::CSS3::Fonts:ver<20130212.000>
     # - font: [ [ <‘font-style’> || <font-variant-css21> || <‘font-weight’> || <‘font-stretch’> ]? <‘font-size’> [ / <‘line-height’> ]? <‘font-family’> ] | caption | icon | menu | message-box | small-caption | status-bar
     token font-variant-css21 {:i [ normal | small\-caps ] & <keyw>}
     rule  decl:sym<font> {:i (font) ':' [
-                              [ <font-style> | <font-variant=.font-variant-css21> | <font-weight> | <font-stretch> ]**0..4 <font-size> [ '/' <line-height> ]? <font-family> [ ',' <font-family> ]*
-                              | [ caption | icon | menu | message\-box | small\-caption | status\-bar ] & <keyw>
-                              || <any-args> ] }
+                               <inherit>
+                               | [ <font-style> | <font-variant=.font-variant-css21> | <font-weight> | <font-stretch> ]**0..4 <font-size> [ '/' <line-height> ]? <font-family> [ ',' <font-family> ]*
+                               | [ caption | icon | menu | message\-box | small\-caption | status\-bar ] & <keyw>
+                               || <misc> ] }
 
     # - font-family: [ <family-name> | <generic-family> ]#
     rule font-family {:i [ serif | sans\-serif | cursive | fantasy | monospace ] & <generic-family=.keyw> || <family-name=.identifiers> | <family-name=.string> }
-    rule decl:sym<font-family> {:i (font\-family) ':' [ <font-family> [ ',' <font-family> || <any> ]*
-                                                        | <inherit> || <any-args> ] }
+    rule decl:sym<font-family> {:i (font\-family) ':' [
+                                     <inherit>
+                                     | <font-family> [ ',' <font-family> || <any> ]*
+                                     || <misc> ] }
 
     # - font-feature-settings: normal | <feature-tag-value>#
-    rule decl:sym<font-feature-settings> {:i (font\-feature\-settings) ':'  [ normal & <keyw> | [ <feature-tag-value> [ ',' <feature-tag-value> ]* ] || <any-args> ] }
+    rule decl:sym<font-feature-settings> {:i (font\-feature\-settings) ':'  [ normal & <keyw> | [ <feature-tag-value> [ ',' <feature-tag-value> ]* ] || <misc> ] }
 
     # - font-kerning: auto | normal | none
-    rule decl:sym<font-kerning> {:i (font\-kerning) ':'  [ [ auto | normal | none ] & <keyw> || <any-args> ] }
+    rule decl:sym<font-kerning> {:i (font\-kerning) ':'  [ [ auto | normal | none ] & <keyw> || <misc> ] }
 
     # - font-language-override: normal | <string>
-    rule decl:sym<font-language-override> {:i (font\-language\-override) ':'  [ normal & <keyw> | <string> || <any-args> ] }
+    rule decl:sym<font-language-override> {:i (font\-language\-override) ':'  [ normal & <keyw> | <string> || <misc> ] }
 
     # - font-size: <absolute-size> | <relative-size> | <length> | <percentage>
     token absolute-size {:i [ [[xx|x]\-]?small | medium | [[xx|x]\-]?large ] & <keyw> }
     token relative-size {:i [ larger | smaller ] & <keyw> }
     token font-size {:i <absolute-size> | <relative-size> | <length> | <percentage> }
-    rule decl:sym<font-size> {:i (font\-size) ':'  [ <font-size> | inherit || <any-args> ] }
+    rule decl:sym<font-size> {:i (font\-size) ':'  [ <font-size> || <misc> ] }
 
     # - font-size-adjust: none | auto | <number>
-    rule decl:sym<font-size-adjust> {:i (font\-size\-adjust) ':'  [ [ none | auto ] & <keyw> | <number> || <any-args> ] }
+    rule decl:sym<font-size-adjust> {:i (font\-size\-adjust) ':'  [ [ none | auto ] & <keyw> | <number> || <misc> ] }
 
     # - font-stretch: normal | ultra-condensed | extra-condensed | condensed | semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded
     token font-stretch {:i [ normal | ultra\-condensed | extra\-condensed | condensed | semi\-condensed | semi\-expanded | expanded | extra\-expanded | ultra\-expanded ] & <keyw> }
-    rule decl:sym<font-stretch> {:i (font\-stretch) ':'  [ <font-stretch> | inherit || <any-args> ] }
+    rule decl:sym<font-stretch> {:i (font\-stretch) ':'  [ <font-stretch> || <misc> ] }
 
     # - font-style: normal | italic | oblique
     token font-style {:i [ normal | italic | oblique ] & <keyw> }
-    rule decl:sym<font-style> {:i (font\-style) ':'  [ <font-style> | inherit || <any-args> ] }
+    rule decl:sym<font-style> {:i (font\-style) ':'  [ <font-style> || <misc> ] }
 
     # - font-synthesis: none | [ weight || style ]
-    rule decl:sym<font-synthesis> {:i (font\-synthesis) ':'  [ none & <keyw> | [ [ [ weight | style ] & <keyw> ]**1..2 ] || <any-args> ] }
+    rule decl:sym<font-synthesis> {:i (font\-synthesis) ':'  [ none & <keyw> | [ [ [ weight | style ] & <keyw> ]**1..2 ] || <misc> ] }
 
     # - font-variant: normal | none | [ <common-lig-values> || <discretionary-lig-values> || <historical-lig-values> || <contextual-alt-values> || stylistic(<feature-value-name>) || historical-forms || styleset(<feature-value-name>#) || character-variant(<feature-value-name>#) || swash(<feature-value-name>) || ornaments(<feature-value-name>) || annotation(<feature-value-name>) || [ small-caps | all-small-caps | petite-caps | all-petite-caps | unicase | titling-caps ] || <numeric-figure-values> || <numeric-spacing-values> || <numeric-fraction-values> || ordinal || slashed-zero || <east-asian-variant-values> || <east-asian-width-values> || ruby ]
-    rule decl:sym<font-variant> {:i (font\-variant) ':'  [ [ [ normal | none ] & <keyw> | [ [ <common-lig-values> | <discretionary-lig-values> | <historical-lig-values> | <contextual-alt-values> | <stylistic> | historical\-forms & <keyw> | <styleset> | <character-variant> | <swash> | <ornaments> | <annotation> | [ [ small\-caps | all\-small\-caps | petite\-caps | all\-petite\-caps | unicase | titling\-caps ] & <keyw> ] | <numeric-figure-values> | <numeric-spacing-values> | <numeric-fraction-values> | ordinal & <keyw> | slashed\-zero & <keyw> | <east-asian-variant-values> | <east-asian-width-values> | ruby & <keyw> ] ','? ]**1..20 ] || <any-args> ] }
+    rule decl:sym<font-variant> {:i (font\-variant) ':'  [ [ [ normal | none ] & <keyw> | [ [ <common-lig-values> | <discretionary-lig-values> | <historical-lig-values> | <contextual-alt-values> | <stylistic> | historical\-forms & <keyw> | <styleset> | <character-variant> | <swash> | <ornaments> | <annotation> | [ [ small\-caps | all\-small\-caps | petite\-caps | all\-petite\-caps | unicase | titling\-caps ] & <keyw> ] | <numeric-figure-values> | <numeric-spacing-values> | <numeric-fraction-values> | ordinal & <keyw> | slashed\-zero & <keyw> | <east-asian-variant-values> | <east-asian-width-values> | ruby & <keyw> ] ','? ]**1..20 ] || <misc> ] }
 
     # - font-variant-alternates: normal | [ stylistic(<feature-value-name>) || historical-forms || styleset(<feature-value-name>#) || character-variant(<feature-value-name>#) || swash(<feature-value-name>) || ornaments(<feature-value-name>) || annotation(<feature-value-name>) ]
-    rule decl:sym<font-variant-alternates> {:i (font\-variant\-alternates) ':'  [ normal & <keyw> | [ [ <stylistic> | historical\-forms & <keyw> | <styleset> | <character-variant> | <swash> | <ornaments> | <annotation> ]**1..7 ] || <any-args> ] }
+    rule decl:sym<font-variant-alternates> {:i (font\-variant\-alternates) ':'  [ normal & <keyw> | [ [ <stylistic> | historical\-forms & <keyw> | <styleset> | <character-variant> | <swash> | <ornaments> | <annotation> ]**1..7 ] || <misc> ] }
 
     # - font-variant-caps: normal | small-caps | all-small-caps | petite-caps | all-petite-caps | unicase | titling-caps
-    rule decl:sym<font-variant-caps> {:i (font\-variant\-caps) ':'  [ [ normal | small\-caps | all\-small\-caps | petite\-caps | all\-petite\-caps | unicase | titling\-caps ] & <keyw> || <any-args> ] }
+    rule decl:sym<font-variant-caps> {:i (font\-variant\-caps) ':'  [ [ normal | small\-caps | all\-small\-caps | petite\-caps | all\-petite\-caps | unicase | titling\-caps ] & <keyw> || <misc> ] }
 
     # - font-variant-east-asian: normal | [ <east-asian-variant-values> || <east-asian-width-values> || ruby ]
-    rule decl:sym<font-variant-east-asian> {:i (font\-variant\-east\-asian) ':'  [ normal & <keyw> | [ [ <east-asian-variant-values> | <east-asian-width-values> | ruby & <keyw> ]**1..3 ] || <any-args> ] }
+    rule decl:sym<font-variant-east-asian> {:i (font\-variant\-east\-asian) ':'  [ normal & <keyw> | [ [ <east-asian-variant-values> | <east-asian-width-values> | ruby & <keyw> ]**1..3 ] || <misc> ] }
 
     # - font-variant-ligatures: normal | none | [ <common-lig-values> || <discretionary-lig-values> || <historical-lig-values> || <contextual-alt-values> ]
-    rule decl:sym<font-variant-ligatures> {:i (font\-variant\-ligatures) ':'  [ [ normal | none ] & <keyw> | [ [ <common-lig-values> | <discretionary-lig-values> | <historical-lig-values> | <contextual-alt-values> ]**1..4 ] || <any-args> ] }
+    rule decl:sym<font-variant-ligatures> {:i (font\-variant\-ligatures) ':'  [ [ normal | none ] & <keyw> | [ [ <common-lig-values> | <discretionary-lig-values> | <historical-lig-values> | <contextual-alt-values> ]**1..4 ] || <misc> ] }
 
     # - font-variant-numeric: normal | [ <numeric-figure-values> || <numeric-spacing-values> || <numeric-fraction-values> || ordinal || slashed-zero ]
-    rule decl:sym<font-variant-numeric> {:i (font\-variant\-numeric) ':'  [ normal & <keyw> | [ [ <numeric-figure-values> | <numeric-spacing-values> | <numeric-fraction-values> | ordinal & <keyw> | slashed\-zero & <keyw> ]**1..5 ] || <any-args> ] }
+    rule decl:sym<font-variant-numeric> {:i (font\-variant\-numeric) ':'  [ normal & <keyw> | [ [ <numeric-figure-values> | <numeric-spacing-values> | <numeric-fraction-values> | ordinal & <keyw> | slashed\-zero & <keyw> ]**1..5 ] || <misc> ] }
 
     # - font-variant-position: normal | sub | super
-    rule decl:sym<font-variant-position> {:i (font\-variant\-position) ':'  [ [ normal | sub | super ] & <keyw> || <any-args> ] }
+    rule decl:sym<font-variant-position> {:i (font\-variant\-position) ':'  [ [ normal | sub | super ] & <keyw> || <misc> ] }
 
     # - font-weight: normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900
     token font-weight {:i [ normal | bold | bolder | lighter ] & <keyw> | [ 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 ] & <number> }
-    rule decl:sym<font-weight> {:i (font\-weight) ':'  [ <font-weight> | inherit || <any-args> ] }
+    rule decl:sym<font-weight> {:i (font\-weight) ':'  [ <font-weight> || <misc> ] }
 
     # - line-height: normal | <number> | <length> | <percentage> | inherit
     token line-height {:i normal & <keyw> | <number> | <length> | <percentage> }
-    rule decl:sym<line-height> {:i (line\-height) ':' [ <line-height>
-                                                        | <inherit> || <any-args> ]}
+    rule decl:sym<line-height> {:i (line\-height) ':' [ <line-height> || <misc> ]}
 }
 
 # ----------------------------------------------------------------------
@@ -150,7 +152,7 @@ class CSS::Language::CSS3::Fonts::Actions
     }
 
     method decl:sym<font-size-adjust>($/) {
-        make $._make_decl($/, '<none> | <auto> | <number>');
+        $._make_decl($/, '<none> | <auto> | <number>');
     }
 
     method font-stretch($/) { make $.list($/) }
