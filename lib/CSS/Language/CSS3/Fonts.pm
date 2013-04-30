@@ -26,20 +26,20 @@ grammar CSS::Language::CSS3::Fonts:ver<20130212.000>
     # - font: [ [ <‘font-style’> || <font-variant-css21> || <‘font-weight’> || <‘font-stretch’> ]? <‘font-size’> [ / <‘line-height’> ]? <‘font-family’> ] | caption | icon | menu | message-box | small-caption | status-bar
     token font-variant-css21 {:i [ normal | small\-caps ] & <keyw>}
     rule  decl:sym<font> {:i (font) ':' [
-                               <inherit>
-                               | [ <font-style> | <font-variant=.font-variant-css21> | <font-weight> | <font-stretch> ]**0..4 <font-size> [ '/' <line-height> ]? <font-family> [ ',' <font-family> ]*
+                               <proforma>
+                               | [ <font-style> | <font-variant=.font-variant-css21> | <font-weight> | <font-stretch> ]**0..4 <font-size> [ '/' <line-height> ]? <font-family> +% ','
                                | [ caption | icon | menu | message\-box | small\-caption | status\-bar ] & <keyw>
                                || <misc> ] }
 
     # - font-family: [ <family-name> | <generic-family> ]#
     rule font-family {:i [ serif | sans\-serif | cursive | fantasy | monospace ] & <generic-family=.keyw> || <family-name=.identifiers> | <family-name=.string> }
     rule decl:sym<font-family> {:i (font\-family) ':' [
-                                     <inherit>
-                                     | <font-family> [ ',' <font-family> || <any> ]*
+                                     <proforma>
+                                     | <font-family> +% ','
                                      || <misc> ] }
 
     # - font-feature-settings: normal | <feature-tag-value>#
-    rule decl:sym<font-feature-settings> {:i (font\-feature\-settings) ':'  [ normal & <keyw> | [ <feature-tag-value> [ ',' <feature-tag-value> ]* ] || <misc> ] }
+    rule decl:sym<font-feature-settings> {:i (font\-feature\-settings) ':'  [ normal & <keyw> | <feature-tag-value> +% ',' || <misc> ] }
 
     # - font-kerning: auto | normal | none
     rule decl:sym<font-kerning> {:i (font\-kerning) ':'  [ [ auto | normal | none ] & <keyw> || <misc> ] }
