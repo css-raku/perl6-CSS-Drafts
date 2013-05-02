@@ -10,7 +10,7 @@ grammar CSS::Language::CSS3::Selectors::Syntax {
     # extensions:
     # ----------
     # inherited combinators: '+' (adjacent), '>' (child)
-    token combinator:sym<sibling> {'~'}
+    rule combinator:sym<sibling> { '~' }
 
     # allow '::' element selectors
     rule pseudo:sym<::element> {'::'<element=.ident>}
@@ -18,8 +18,8 @@ grammar CSS::Language::CSS3::Selectors::Syntax {
     rule namespace-prefix {[<ident>|<wildcard>]?'|'}
     rule wildcard {'*'}
 
-    token simple-selector { <namespace-prefix>? [<element-name>|<element-name=.wildcard>] [<id> | <class> | <attrib> | <pseudo>]*
-                          | [<id> | <class> | <attrib> | <pseudo>]+ }
+    rule simple-selector { <namespace-prefix>? [<element-name>|<element-name=.wildcard>][<id>|<class>|<attrib>|<pseudo>]*
+                          | [<id>|<class>|<attrib>|<pseudo>]+ }
 
     rule type-selector {<namespace-prefix>? <element-name>}
     
@@ -57,6 +57,8 @@ grammar CSS::Language::CSS3::Selectors:ver<20090929.000>
 }
 
 class CSS::Language::CSS3::Selectors::Actions {
+
+    method combinator:sym<sibling>($/)  { make $.token('~') }
 
     method pseudo:sym<::element>($/) { make $.node($/) }
 

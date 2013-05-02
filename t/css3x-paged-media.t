@@ -21,16 +21,16 @@ my $top_center = 'page { color: red;
 
 my $top_center_ast = {"declarations" => {"color" => {"expr" => ["color" => {"r" => 255, "g" => 0, "b" => 0}]},
                                          "\@top-center" => {"margin-box" => {"box-vpos" => "top", "box-center" => "center"},
-                                                            "declarations" => {"content" => {"expr" => ["string" => "Page ", "counters" => {"identifier" => "page", "string" => "."}]}}}}
-                      , "\@" => "page"};
+                                                            "declarations" => {"content" => {"expr" => ["string" => "Page ", "counters" => {"identifier" => "page", "string" => "."}]}}}},
+                      "\@" => "page"};
 
 for (
     at-rule   => {input => 'page :left { margin-left: 4cm; size: a4 }',
                   ast => {"page" => "left",
                           "declarations" => {"margin-left" => {"expr" => ["length" => 4]},
                                              "size" => {"expr" => ["page-size" => "a4"]},
-                          }
-                          , "\@" => "page"},
+                          },
+                          "\@" => "page"},
     },
     at-rule   => {input => 'page :junk { margin-right: 2cm }',
                   ast => {"declarations" => {"margin-right" => {"expr" => ["length" => 2]}}, "\@" => "page"},
