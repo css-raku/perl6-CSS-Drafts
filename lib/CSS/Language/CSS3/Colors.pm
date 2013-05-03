@@ -81,7 +81,7 @@ grammar CSS::Language::CSS3::Colors:ver<20110607.000>
 
     # color: <color> -- inherited from CSS21
 
-    rule decl:sym<opacity> {:i (opacity) ':' [ <alphavalue=.color-alpha> | <inherit> || <any-args> ] }
+    rule decl:sym<opacity> {:i (opacity) ':' [ <alphavalue=.color-alpha> || <proforma> ] }
 
 }
 
