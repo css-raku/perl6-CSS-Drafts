@@ -80,29 +80,19 @@ grammar CSS::Language::CSS3::Background:ver<20120724.000>
     rule decl:sym<border-style> {:i (border\-style) ':'  [ <border-style>**1..4 || <misc> ] }
 
     # - border-[top|right|bottom|left]: <border-width> || <border-style> || <color>
-    method decl:sym<border-[top|right|bottom|left]>($/) {
-        $._make_decl($/, q{<border-width> || <border-style> || <color>});
-    }
+    rule decl:sym<border-[top|right|bottom|left]> {:i (border\-[top|right|bottom|left]) ':'  [ [ <border-width> | <border-style> | <color> ]**1..3 || <misc> ] }
 
     # - border-[top-color|right-color|bottom-color|left-color]: <color>
-    method decl:sym<border-[top-color|right-color|bottom-color|left-color]>($/) {
-        $._make_decl($/, q{<color>});
-    }
+    rule decl:sym<border-[top-color|right-color|bottom-color|left-color]> {:i (border\-[top\-color|right\-color|bottom\-color|left\-color]) ':'  [ <color> || <misc> ] }
 
     # - border-[top-left-radius|top-right-radius|bottom-right-radius|bottom-left-radius]: [ <length> | <percentage> ]{1,2}
-    method decl:sym<border-[top-left-radius|top-right-radius|bottom-right-radius|bottom-left-radius]>($/) {
-        $._make_decl($/, q{[ <length> | <percentage> ]{1,2}});
-    }
+    rule decl:sym<border-[top-left-radius|top-right-radius|bottom-right-radius|bottom-left-radius]> {:i (border\-[top\-left\-radius|top\-right\-radius|bottom\-right\-radius|bottom\-left\-radius]) ':'  [ [ [ <length> | <percentage> ] ]**1..2 || <misc> ] }
 
     # - border-[top-style|right-style|bottom-style|left-style]: <border-style>
-    method decl:sym<border-[top-style|right-style|bottom-style|left-style]>($/) {
-        $._make_decl($/, q{<border-style>});
-    }
+    rule decl:sym<border-[top-style|right-style|bottom-style|left-style]> {:i (border\-[top\-style|right\-style|bottom\-style|left\-style]) ':'  [ <border-style> || <misc> ] }
 
     # - border-[top-width|right-width|bottom-width|left-width]: <border-width>
-    method decl:sym<border-[top-width|right-width|bottom-width|left-width]>($/) {
-        $._make_decl($/, q{<border-width>});
-    }
+    rule decl:sym<border-[top-width|right-width|bottom-width|left-width]> {:i (border\-[top\-width|right\-width|bottom\-width|left\-width]) ':'  [ <border-width> || <misc> ] }
 
     # - border-width: <border-width>{1,4}
     rule decl:sym<border-width> {:i (border\-width) ':'  [ <border-width>**1..4 || <misc> ] }
@@ -218,31 +208,31 @@ class CSS::Language::CSS3::Background::Actions
         $._make_decl($/, q{<border-style>{1,4}});
     }
 
-    # - border-top|border-right|border-bottom|border-left: <border-width> || <border-style> || <color>
-    method decl:sym<border-top|border-right|border-bottom|border-left>($/) {
+    # - border-[top|right|bottom|left]: <border-width> || <border-style> || <color>
+    method decl:sym<border-[top|right|bottom|left]>($/) {
         $._make_decl($/, q{<border-width> || <border-style> || <color>});
     }
 
-    # - border-top-color|border-right-color|border-bottom-color|border-left-color: <color>
-    method decl:sym<border-top-color|border-right-color|border-bottom-color|border-left-color>($/) {
+    # - border-[top-color|right-color|bottom-color|left-color]: <color>
+    method decl:sym<border-[top-color|right-color|bottom-color|left-color]>($/) {
         $._make_decl($/, q{<color>});
     }
 
-    # - border-top-left-radius|border-top-right-radius|border-bottom-right-radius|border-bottom-left-radius: [ <length> | <percentage> ]{1,2}
-    method decl:sym<border-top-left-radius|border-top-right-radius|border-bottom-right-radius|border-bottom-left-radius>($/) {
+    # - border-[top-left-radius|top-right-radius|bottom-right-radius|bottom-left-radius]: [ <length> | <percentage> ]{1,2}
+    method decl:sym<border-[top-left-radius|top-right-radius|bottom-right-radius|bottom-left-radius]>($/) {
         $._make_decl($/, q{[ <length> | <percentage> ]{1,2}});
     }
 
-    # - border-top-style|border-right-style|border-bottom-style|border-left-style: <border-style>
-    method decl:sym<border-top-style|border-right-style|border-bottom-style|border-left-style>($/) {
+    # - border-[top-style|right-style|bottom-style|left-style]: <border-style>
+    method decl:sym<border-[top-style|right-style|bottom-style|left-style]>($/) {
         $._make_decl($/, q{<border-style>});
     }
 
-    # - border-top-width|border-right-width|border-bottom-width|border-left-width: <border-width>
-    method decl:sym<border-top-width|border-right-width|border-bottom-width|border-left-width>($/) {
+    # - border-[top-width|right-width|bottom-width|left-width]: <border-width>
+    method decl:sym<border-[top-width|right-width|bottom-width|left-width]>($/) {
         $._make_decl($/, q{<border-width>});
     }
-
+ 
     # - border-width: <border-width>{1,4}
     method decl:sym<border-width>($/) {
         $._make_decl($/, q{<border-width>{1,4}});
