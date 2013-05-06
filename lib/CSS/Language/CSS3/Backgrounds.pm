@@ -1,24 +1,32 @@
 use v6;
 
-class CSS::Language::CSS3::Background::Actions {...}
+class CSS::Language::CSS3::Backgrounds::Actions {...}
 
 use CSS::Language::CSS3::_Base;
 # CSS3 Paged Media Module Extensions
 # - reference: http://www.w3.org/TR/2012/CR-css3-background-20120724/
 #
 
-grammar CSS::Language::CSS3::Background::Syntax {
+grammar CSS::Language::CSS3::Backgrounds::Syntax {
 
 }
 
-grammar CSS::Language::CSS3::Background:ver<20120724.000>
-    is CSS::Language::CSS3::Background::Syntax
+grammar CSS::Language::CSS3::Backgrounds:ver<20120724.000>
+    is CSS::Language::CSS3::Backgrounds::Syntax
     is CSS::Language::CSS3::_Base {
 
     # ---- Properties ----#
 
+    rule attachment { [ scroll | fixed | local ] & <keyw> }
+    rule image {<uri>}
+    rule bg-image { <image> | none & <keyw> }
+    rule box { [  border\-box | padding\-box | content\-box ] & <keyw> }
+    rule repeat-style { [ repeat\-x | repeat\-y ] & <keyw>
+                            | [ [repeat | space | round | no\-repeat] & <keyw> ] ** 1..2 }
+    rule bg-layer { [ <bg-image> | <position> [ '/' <bg-size> ]? | <repeat-style> | <attachment> | <box>**1..2 ] ** 1..5 }
+    rule final-bg-layer { [ <bg-layer> | <color> ] ** 1..2}
     # - background: [ <bg-layer> , ]* <final-bg-layer>
-    rule decl:sym<background> {:i (background) ':'  [ <bg-layer> +% ',' || <misc> ] }
+    rule decl:sym<background> {:i (background) ':'  [ [ <bg-layer> ',' ]* <bg-layer=.final-bg-layer> || <misc> ] }
 
     # - background-attachment: <attachment> [ , <attachment> ]*
     rule decl:sym<background-attachment> {:i (background\-attachment) ':'  [ <attachment> [ ',' <attachment> ]* || <misc> ] }
@@ -42,6 +50,7 @@ grammar CSS::Language::CSS3::Background:ver<20120724.000>
     rule decl:sym<background-repeat> {:i (background\-repeat) ':'  [ <repeat-style> +% ',' || <misc> ] }
 
     # - background-size: <bg-size> [ , <bg-size> ]*
+    rule bg-size {:i [ <length> | <percentage> | auto & <keyw> ] ** 1..2 | [cover | contain ] & <keyw> }
     rule decl:sym<background-size> {:i (background\-size) ':'  [ <bg-size> +% ',' || <misc> ] }
 
     # - border: <border-width> || <border-style> || <color>
@@ -101,16 +110,25 @@ grammar CSS::Language::CSS3::Background:ver<20120724.000>
     rule decl:sym<box-decoration-break> {:i (box\-decoration\-break) ':'  [ [ slice | clone ] & <keyw> || <misc> ] }
 
     # - box-shadow: none | <shadow> [ , <shadow> ]*
-    rule decl:sym<box-shadow> {:i (box\-shadow) ':'  [ none & <keyw> | <shadow> +% <shadow> || <misc> ] }
+    rule shadow {:i [ <length> | <color> | inset & <keyw> ]+ }
+    rule decl:sym<box-shadow> {:i (box\-shadow) ':'  [ none & <keyw> | <shadow> +% ',' || <misc> ] }
 
 }
 
-class CSS::Language::CSS3::Background::Actions
+class CSS::Language::CSS3::Backgrounds::Actions
     is CSS::Language::CSS3::_Base::Actions {
 
+    method attachment($/) { make $.token($<keyw>.ast) }
+    method image($/) {  make $<uri>.ast }
+    method bg-image($/) {  make $.node($/) }
+    method box($/) { make $.token($<keyw>.ast) }
+    method repeat-style($/) { make $.token($<keyw>.ast) }
+    method bg-layer($/) { make $.node($/) }
+    method final-bg-layer($/) { make $.node($/) }
     # - background: [ <bg-layer> , ]* <final-bg-layer>
     method decl:sym<background>($/) {
-        $._make_decl($/, q{[ <bg-layer> , ]* <final-bg-layer>});
+        $._make_decl($/, q{[ <bg-layer> , ]* <final-bg-layer>},
+            :body($<bg-layer>));
     }
 
     # - background-attachment: <attachment> [ , <attachment> ]*
@@ -149,8 +167,9 @@ class CSS::Language::CSS3::Background::Actions
     }
 
     # - background-size: <bg-size> [ , <bg-size> ]*
+    method bg-size($/) { make $.node($/) }
     method decl:sym<background-size>($/) {
-        $._make_decl($/, q{<bg-size> [ , <bg-size> ]*});
+        $._make_decl($/, q{<bg-size> [ , <bg-size> ]*}, :body($<bg-size>));
     }
 
     # - border: <border-width> || <border-style> || <color>
@@ -160,7 +179,7 @@ class CSS::Language::CSS3::Background::Actions
 
     # - border-color: <color>{1,4}
     method decl:sym<border-color>($/) {
-        $._make_decl($/, q{<color>{1,4}});
+        $._make_decl($/, q{<color>{1,4}}, :expand<box>);
     }
 
     # - border-image: <‘border-image-source’> || <‘border-image-slice’> [ / <‘border-image-width’> | / <‘border-image-width’>? / <‘border-image-outset’> ]? || <‘border-image-repeat’>
@@ -171,7 +190,7 @@ class CSS::Language::CSS3::Background::Actions
     # - border-image-outset: [ <length> | <number> ]{1,4}
     method border-image-outset($/) { make $.list($/) }
     method decl:sym<border-image-outset>($/) {
-        $._make_decl($/, q{[ <length> | <number> ]{1,4}}, :body($<border-image-outset>));
+        $._make_decl($/, q{[ <length> | <number> ]{1,4}}, :body($<border-image-outset>), :expand<box>);
     }
 
     # - border-image-repeat: [ stretch | repeat | round | space ]{1,2}
@@ -183,7 +202,7 @@ class CSS::Language::CSS3::Background::Actions
     # - border-image-slice: [<number> | <percentage>]{1,4} 
     method border-image-slice($/) { make $.list($/) }
     method decl:sym<border-image-slice>($/) {
-        $._make_decl($/, q{[<number> | <percentage>]{1,4} }, :body($<border-image-slice>));
+        $._make_decl($/, q{[<number> | <percentage>]{1,4} }, :body($<border-image-slice>), :expand<box>);
     }
 
     # - border-image-source: none | <image>
@@ -195,17 +214,17 @@ class CSS::Language::CSS3::Background::Actions
     # - border-image-width: [ <length> | <percentage> | <number> | auto ]{1,4}
     method border-image-width($/) { make $.list($/) }
     method decl:sym<border-image-width>($/) {
-        $._make_decl($/, q{[ <length> | <percentage> | <number> | auto ]{1,4}}, :body($<border-image-width>));
+        $._make_decl($/, q{[ <length> | <percentage> | <number> | auto ]{1,4}}, :body($<border-image-width>), :expand<box>);
     }
 
     # - border-radius: [ <length> | <percentage> ]{1,4} [ / [ <length> | <percentage> ]{1,4} ]?
     method decl:sym<border-radius>($/) {
-        $._make_decl($/, q{[ <length> | <percentage> ]{1,4} [ / [ <length> | <percentage> ]{1,4} ]?});
+        $._make_decl($/, q{[ <length> | <percentage> ]{1,4} [ / [ <length> | <percentage> ]{1,4} ]?}, :expand<box>);
     }
 
     # - border-style: <border-style>{1,4}
     method decl:sym<border-style>($/) {
-        $._make_decl($/, q{<border-style>{1,4}});
+        $._make_decl($/, q{<border-style>{1,4}}, :expand<box>);
     }
 
     # - border-[top|right|bottom|left]: <border-width> || <border-style> || <color>
@@ -235,7 +254,7 @@ class CSS::Language::CSS3::Background::Actions
 
     # - border-width: <border-width>{1,4}
     method decl:sym<border-width>($/) {
-        $._make_decl($/, q{<border-width>{1,4}});
+        $._make_decl($/, q{<border-width>{1,4}}, :expand<box>);
     }
 
     # - box-decoration-break: slice | clone
@@ -244,6 +263,7 @@ class CSS::Language::CSS3::Background::Actions
     }
 
     # - box-shadow: none | <shadow> [ , <shadow> ]*
+    method shadow($/) { make $.node($/) }
     method decl:sym<box-shadow>($/) {
         $._make_decl($/, q{none | <shadow> [ , <shadow> ]*});
     }

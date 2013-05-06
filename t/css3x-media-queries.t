@@ -37,7 +37,7 @@ for (
     at-rule   => {input => 'media all { body { background:lime } }',
                   ast => {"media-list" => ["media-query" => ["media" => "all"]],
                           "media-rules" => ["ruleset" => {"selectors" => ["selector" => ["simple-selector" => ["element-name" => "body"]]],
-                                                          "declarations" => {"background" => {"expr" => ["background-color" => ["color" => {"r" => 0, "g" => 255, "b" => 0}]]}}}],
+                                                          "declarations" => {"background" => {"expr" => ["background-color" => {"color" => {"r" => 0, "g" => 255, "b" => 0}}]}}}],
                           "\@" => "media"},
     },
     at-rule => {input => 'media all and (color) { }',
