@@ -1,18 +1,18 @@
 use v6;
 
-class CSS::Language::CSS3::Backgrounds::Actions {...}
+class CSS::Drafts::CSS3::Backgrounds::Actions {...}
 
 use CSS::Language::CSS3::_Base;
 # CSS3 Paged Media Module Extensions
 # - reference: http://www.w3.org/TR/2012/CR-css3-background-20120724/
 #
 
-grammar CSS::Language::CSS3::Backgrounds::Syntax {
+grammar CSS::Drafts::CSS3::Backgrounds::Syntax {
 
 }
 
-grammar CSS::Language::CSS3::Backgrounds:ver<20120724.000>
-    is CSS::Language::CSS3::Backgrounds::Syntax
+grammar CSS::Drafts::CSS3::Backgrounds:ver<20120724.000>
+    is CSS::Drafts::CSS3::Backgrounds::Syntax
     is CSS::Language::CSS3::_Base {
 
     # ---- Properties ----#
@@ -115,7 +115,7 @@ grammar CSS::Language::CSS3::Backgrounds:ver<20120724.000>
 
 }
 
-class CSS::Language::CSS3::Backgrounds::Actions
+class CSS::Drafts::CSS3::Backgrounds::Actions
     is CSS::Language::CSS3::_Base::Actions {
 
     method attachment($/) { make $.token($<keyw>.ast) }
