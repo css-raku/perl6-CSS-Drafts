@@ -1,13 +1,12 @@
-perl6-CSS-Language-CSS3
-=======================
+perl6-CSS-Drafts
+================
 
-** This project has just been raided by CSS::Language. The spoils are about to get renamed/reorg'ed as per6-CSS-Drafts-CSS3 **
+This module contains draft CSS extension modules. They may be dropped,
+drastically changed, restructured or promoted to CSS::Language::CSS3 (which
+this module inherits). Instability guaranteed.
 
-Contents
---------
-CSS level 3 is composed of number of modules. These are under construction
-in the following classes
-
+Current Contents
+----------------
 CSS::Drafts::CSS3
 CSS::Drafts::CSS3::Backgrounds
 
