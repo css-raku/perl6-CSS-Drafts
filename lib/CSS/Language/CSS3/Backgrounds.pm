@@ -45,6 +45,7 @@ grammar CSS::Language::CSS3::Backgrounds:ver<20120724.000>
 
     # - background-position: <position> [ , <position> ]*
     # simplification of <position>
+    rule keyword {\w+}
     rule position {:i [ <percentage> | <length> | [ [ left | center | right | top | bottom ] & <keyw> ] [ <percentage> | <length> ] ? ] ** 1..2 }
     rule decl:sym<background-position> {:i (background\-position) ':'  [ <position> +% ',' || <misc> ] }
 
@@ -159,6 +160,7 @@ class CSS::Language::CSS3::Backgrounds::Actions
     }
 
     # - background-position: <position> [ , <position> ]*
+    method position($/) { make $.list($/) }
     method decl:sym<background-position>($/) {
         $._make_decl($/, q{<position> [ , <position> ]*});
     }
