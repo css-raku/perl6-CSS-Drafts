@@ -1,18 +1,18 @@
 use v6;
 
-class CSS::Drafts::CSS3::Backgrounds::Actions {...}
+class CSS::Language::CSS3::Backgrounds::Actions {...}
 
 use CSS::Language::CSS3::_Base;
 # CSS3 Paged Media Module Extensions
 # - reference: http://www.w3.org/TR/2012/CR-css3-background-20120724/
 #
 
-grammar CSS::Drafts::CSS3::Backgrounds::Syntax {
+grammar CSS::Language::CSS3::Backgrounds::Syntax {
 
 }
 
-grammar CSS::Drafts::CSS3::Backgrounds:ver<20120724.000>
-    is CSS::Drafts::CSS3::Backgrounds::Syntax
+grammar CSS::Language::CSS3::Backgrounds:ver<20120724.000>
+    is CSS::Language::CSS3::Backgrounds::Syntax
     is CSS::Language::CSS3::_Base {
 
     # ---- Properties ----#
@@ -44,6 +44,8 @@ grammar CSS::Drafts::CSS3::Backgrounds:ver<20120724.000>
     rule decl:sym<background-origin> {:i (background\-origin) ':'  [ <box> +% ',' || <misc> ] }
 
     # - background-position: <position> [ , <position> ]*
+    # simplification of <position>
+    rule position {:i [ <percentage> | <length> | [ [ left | center | right | top | bottom ] & <keyw> ] [ <percentage> | <length> ] ? ] ** 1..2 }
     rule decl:sym<background-position> {:i (background\-position) ':'  [ <position> +% ',' || <misc> ] }
 
     # - background-repeat: <repeat-style> [ , <repeat-style> ]*
@@ -95,7 +97,7 @@ grammar CSS::Drafts::CSS3::Backgrounds:ver<20120724.000>
     rule decl:sym<border-[top|right|bottom|left]-color> {:i (border\-[top|right|bottom|left]\-color) ':'  [ <color> || <misc> ] }
 
     # - border-[top-left|top-right|bottom-right|bottom-left]-radius: [ <length> | <percentage> ]{1,2}
-    rule decl:sym<border-[top-left|top-right|bottom-right|bottom-left]-radius> {:i (border\-[top\-left|top\-right|bottom\-right|bottom\-left]\-radius) ':'  [ [ [ <length> | <percentage> ] ]**1..2 || <misc> ] }
+    rule decl:sym<border-[top|bottom]-[left|right]-radius> {:i (border\-[top|bottom]\-[left|right]\-radius) ':'  [ [ [ <length> | <percentage> ] ]**1..2 || <misc> ] }
 
     # - border-[top|right|bottom|left]-style: <border-style>
     rule decl:sym<border-[top|right|bottom|left]-style> {:i (border\-[top|right|bottom|left]\-style) ':'  [ <border-style> || <misc> ] }
@@ -115,7 +117,7 @@ grammar CSS::Drafts::CSS3::Backgrounds:ver<20120724.000>
 
 }
 
-class CSS::Drafts::CSS3::Backgrounds::Actions
+class CSS::Language::CSS3::Backgrounds::Actions
     is CSS::Language::CSS3::_Base::Actions {
 
     method attachment($/) { make $.token($<keyw>.ast) }
@@ -167,7 +169,7 @@ class CSS::Drafts::CSS3::Backgrounds::Actions
     }
 
     # - background-size: <bg-size> [ , <bg-size> ]*
-    method bg-size($/) { make $.node($/) }
+    method bg-size($/) { make $.list($/) }
     method decl:sym<background-size>($/) {
         $._make_decl($/, q{<bg-size> [ , <bg-size> ]*}, :body($<bg-size>));
     }
@@ -238,7 +240,7 @@ class CSS::Drafts::CSS3::Backgrounds::Actions
     }
 
     # - border-[top-left|top-right|bottom-right|bottom-left]-radius: [ <length> | <percentage> ]{1,2}
-    method decl:sym<border-[top-left|top-right|bottom-right|bottom-left]-radius>($/) {
+    method decl:sym<border-[top|bottom]-[left|right]-radius>($/) {
         $._make_decl($/, q{[ <length> | <percentage> ]{1,2}});
     }
 
@@ -267,6 +269,5 @@ class CSS::Drafts::CSS3::Backgrounds::Actions
     method decl:sym<box-shadow>($/) {
         $._make_decl($/, q{none | <shadow> [ , <shadow> ]*});
     }
-
 
 }
