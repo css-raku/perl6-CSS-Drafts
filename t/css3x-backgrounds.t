@@ -14,7 +14,7 @@ my $css_actions = CSS::Language::CSS3::Backgrounds::Actions.new;
 for (
     decl     => {input => 'background: url(a.png) top left no-repeat,
                                        url(b.png) center / 100% 100% no-repeat,
-                                       url(c.png) #fff',
+                                       url(c.png) white',
                  ast => {"property" => "background",
                          "expr" => ["bg-image" => {"image" => "a.png"}, "repeat-style" => "no-repeat",
                                     "bg-image" => {"image" => "b.png"}, "bg-size" => ["percentage" => 100e0, "percentage" => 100e0], "repeat-style" => "no-repeat",
@@ -27,7 +27,7 @@ for (
 
     $css_actions.reset;
     my $p3 = CSS::Language::CSS3::Backgrounds.parse( $input, :rule($rule), :actions($css_actions));
-    say $p3;
+
     t::AST::parse_tests($input, $p3, :rule($rule), :suite('css3-fonts'),
                          :warnings($css_actions.warnings),
                          :expected(%test) );
