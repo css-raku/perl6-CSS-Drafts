@@ -17,13 +17,13 @@ grammar CSS::Language::CSS3::Backgrounds:ver<20120724.000>
 
     # ---- Properties ----#
 
-    rule attachment { [ scroll | fixed | local ] & <keyw> }
+    rule attachment   {:i [ scroll | fixed | local ] & <keyw> }
     rule image {<uri>}
-    rule bg-image { <image> | none & <keyw> }
-    rule box { [  border\-box | padding\-box | content\-box ] & <keyw> }
-    rule repeat-style { [ repeat\-x | repeat\-y ] & <keyw>
-                            | [ [repeat | space | round | no\-repeat] & <keyw> ] ** 1..2 }
-    rule bg-layer { [ <bg-image> | <position> [ '/' <bg-size> ]? | <repeat-style> | <attachment> | <box>**1..2 ] ** 1..5 }
+    rule bg-image     {:i <image> | none & <keyw> }
+    rule box          {:i [  border\-box | padding\-box | content\-box ] & <keyw> }
+    rule repeat-style {:i [ repeat\-x | repeat\-y ] & <keyw>
+                           | [ [repeat | space | round | no\-repeat] & <keyw> ] ** 1..2 }
+    rule bg-layer {:i [ <bg-image> | <position> [ '/' <bg-size> ]? | <repeat-style> | <attachment> | <box>**1..2 ] ** 1..5 }
     rule final-bg-layer { [ <bg-layer> | <color> ] ** 1..2}
     # - background: [ <bg-layer> , ]* <final-bg-layer>
     rule decl:sym<background> {:i (background) ':'  [ [ <bg-layer> ',' ]* <bg-layer=.final-bg-layer> || <misc> ] }
@@ -32,7 +32,8 @@ grammar CSS::Language::CSS3::Backgrounds:ver<20120724.000>
     rule decl:sym<background-attachment> {:i (background\-attachment) ':'  [ <attachment> [ ',' <attachment> ]* || <misc> ] }
 
     # - background-clip: <box> [ , <box> ]*
-    rule decl:sym<background-clip> {:i (background\-clip) ':'  [ <box> +% ',' || <misc> ] }
+    # - background-origin: <box> [ , <box> ]*
+    rule decl:sym<background-[clip|origin]> {:i (background\-[clip|origin]) ':'  [ <box> +% ',' || <misc> ] }
 
     # - background-color: <color>
     rule decl:sym<background-color> {:i (background\-color) ':'  [ <color> || <misc> ] }
@@ -40,12 +41,9 @@ grammar CSS::Language::CSS3::Backgrounds:ver<20120724.000>
     # - background-image: <bg-image> [ , <bg-image> ]*
     rule decl:sym<background-image> {:i (background\-image) ':'  [ <bg-image> +% ',' || <misc> ] }
 
-    # - background-origin: <box> [ , <box> ]*
-    rule decl:sym<background-origin> {:i (background\-origin) ':'  [ <box> +% ',' || <misc> ] }
 
     # - background-position: <position> [ , <position> ]*
     # simplification of <position>
-    rule keyword {\w+}
     rule position {:i [ <percentage> | <length> | [ [ left | center | right | top | bottom ] & <keyw> ] [ <percentage> | <length> ] ? ] ** 1..2 }
     rule decl:sym<background-position> {:i (background\-position) ':'  [ <position> +% ',' || <misc> ] }
 
@@ -57,6 +55,7 @@ grammar CSS::Language::CSS3::Backgrounds:ver<20120724.000>
     rule decl:sym<background-size> {:i (background\-size) ':'  [ <bg-size> +% ',' || <misc> ] }
 
     # - border: <border-width> || <border-style> || <color>
+    rule border-style {:i [ none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset ] & <keyw> }
     rule decl:sym<border> {:i (border) ':'  [ [ <border-width> | <border-style> | <color> ]**1..3 || <misc> ] }
 
     # - border-color: <color>{1,4}
@@ -92,6 +91,7 @@ grammar CSS::Language::CSS3::Backgrounds:ver<20120724.000>
     rule decl:sym<border-style> {:i (border\-style) ':'  [ <border-style>**1..4 || <misc> ] }
 
     # - border-[top|right|bottom|left]: <border-width> || <border-style> || <color>
+    rule border-width {:i <length> | [ thin | medium | thick ] & <keyw> }
     rule decl:sym<border-[top|right|bottom|left]> {:i (border\-[top|right|bottom|left]) ':'  [ [ <border-width> | <border-style> | <color> ]**1..3 || <misc> ] }
 
     # - border-[top|right|bottom|left]-color: <color>
@@ -136,11 +136,12 @@ class CSS::Language::CSS3::Backgrounds::Actions
 
     # - background-attachment: <attachment> [ , <attachment> ]*
     method decl:sym<background-attachment>($/) {
-        $._make_decl($/, q{<attachment> [ , <attachment> ]*});
+        $._make_decl($/, q{<attachment> [ , <attachment> ]*}, :body($<attachment>));
     }
 
     # - background-clip: <box> [ , <box> ]*
-    method decl:sym<background-clip>($/) {
+    # - background-origin: <box> [ , <box> ]*
+    method decl:sym<background-[clip|origin]>($/) {
         $._make_decl($/, q{<box> [ , <box> ]*});
     }
 
@@ -151,23 +152,18 @@ class CSS::Language::CSS3::Backgrounds::Actions
 
     # - background-image: <bg-image> [ , <bg-image> ]*
     method decl:sym<background-image>($/) {
-        $._make_decl($/, q{<bg-image> [ , <bg-image> ]*});
-    }
-
-    # - background-origin: <box> [ , <box> ]*
-    method decl:sym<background-origin>($/) {
-        $._make_decl($/, q{<box> [ , <box> ]*});
+        $._make_decl($/, q{<bg-image> [ , <bg-image> ]*}, :body($<bg-image>));
     }
 
     # - background-position: <position> [ , <position> ]*
     method position($/) { make $.list($/) }
     method decl:sym<background-position>($/) {
-        $._make_decl($/, q{<position> [ , <position> ]*});
+        $._make_decl($/, q{<position> [ , <position> ]*}, :body($<position>));
     }
 
     # - background-repeat: <repeat-style> [ , <repeat-style> ]*
     method decl:sym<background-repeat>($/) {
-        $._make_decl($/, q{<repeat-style> [ , <repeat-style> ]*});
+        $._make_decl($/, q{<repeat-style> [ , <repeat-style> ]*}, :body($<repeat-style>));
     }
 
     # - background-size: <bg-size> [ , <bg-size> ]*
@@ -227,11 +223,13 @@ class CSS::Language::CSS3::Backgrounds::Actions
     }
 
     # - border-style: <border-style>{1,4}
+    method border-style($/) { make $.list($/) }
     method decl:sym<border-style>($/) {
-        $._make_decl($/, q{<border-style>{1,4}}, :expand<box>);
+        $._make_decl($/, q{<border-style>{1,4}}, :expand<box>, :body($<border-style>));
     }
 
     # - border-[top|right|bottom|left]: <border-width> || <border-style> || <color>
+    method border-width($/) { make $.node($/) }
     method decl:sym<border-[top|right|bottom|left]>($/) {
         $._make_decl($/, q{<border-width> || <border-style> || <color>});
     }
@@ -258,7 +256,7 @@ class CSS::Language::CSS3::Backgrounds::Actions
 
     # - border-width: <border-width>{1,4}
     method decl:sym<border-width>($/) {
-        $._make_decl($/, q{<border-width>{1,4}}, :expand<box>);
+        $._make_decl($/, q{<border-width>{1,4}}, :expand<box>, :body($<border-width>));
     }
 
     # - box-decoration-break: slice | clone
