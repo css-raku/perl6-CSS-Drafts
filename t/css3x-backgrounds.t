@@ -51,38 +51,29 @@ for (
     },
     decl => { input => 'background-size: 50% auto', ast => {property => 'background-size', expr => [percentage => 50, keyw => 'auto']},
     },
-    decl => { input => 'border-color: #abc green blue',
-              ast => {property => 'border-color',
-                      expr => ["border-color-top" => ["color" => {"r" => 0xAA, "g" => 0xBB, "b" => 0xCC}],
-                               "border-color-right" => ["color" => {"r" => 0, "g" => 128, "b" => 0}],
-                               "border-color-bottom" => ["color" => {"r" => 0, "g" => 0, "b" => 255}],
-                               "border-color-left" => ["color" => {"r" => 0, "g" => 128, "b" => 0}]]
-              },
+    declaration-list => {
+        input => 'border-color: #abc green blue',
+        ast => {"border-color-top" => {"expr" => ["color" => {"r" => 170, "g" => 187, "b" => 204}]},
+                "border-color-right" => {"expr" => ["color" => {"r" => 0, "g" => 128, "b" => 0}]},
+                "border-color-bottom" => {"expr" => ["color" => {"r" => 0, "g" => 0, "b" => 255}]},
+                "border-color-left" => {"expr" => ["color" => {"r" => 0, "g" => 128, "b" => 0}]}},
     },
-    decl => { input => 'border-style: dotted dashed',
-              ast => {property => 'border-style',
-                      expr => ["border-style-top" => ["keyw" => "dotted"],
-                               "border-style-right" => ["keyw" => "dashed"],
-                               "border-style-bottom" => ["keyw" => "dotted"],
-                               "border-style-left" => ["keyw" => "dashed"]],
-              },
+    declaration-list => {
+        input => 'border-style: dotted dashed',
+        ast => {"border-style-top" => {"expr" => ["keyw" => "dotted"]},
+                "border-style-right" => {"expr" => ["keyw" => "dashed"]},
+                "border-style-bottom" => {"expr" => ["keyw" => "dotted"]},
+                "border-style-left" => {"expr" => ["keyw" => "dashed"]}
+        },
     },
-    decl => { input => 'border-width: 2px thin',
-              ast => {property => 'border-width',
-                      expr => ["border-width-top" => [length => 2],
-                               "border-width-right" => ["keyw" => "thin"],
-                               "border-width-bottom" => [length => 2],
-                               "border-width-left" => ["keyw" => "thin"]],
-              },
+    declaration-list => {
+        input => 'border-width: 2px thin',
+        ast => {"border-width-top" => {"expr" => ["length" => 2e0]},
+                "border-width-right" => {"expr" => ["keyw" => "thin"]},
+                "border-width-bottom" => {"expr" => ["length" => 2e0]},
+                "border-width-left" => {"expr" => ["keyw" => "thin"]}},
     },
-    decl => { input => 'border: 1px solid red',
-              ast => {"property" => "border",
-                      "expr" => ["border-width" => {"length" => 1e0},
-                                 "border-style" => ["keyw" => "solid"],
-                                 "color" => {"r" => 255, "g" => 0, "b" => 0}]
-              },
-    },
-   ) {
+    ) {
     my $rule = $_.key;
     my %test = $_.value;
     my $input = %test<input>;
@@ -90,7 +81,7 @@ for (
     $css_actions.reset;
     my $p3 = CSS::Language::CSS3::Backgrounds.parse( $input, :rule($rule), :actions($css_actions));
 
-    t::AST::parse_tests($input, $p3, :rule($rule), :suite('css3-fonts'),
+    t::AST::parse_tests($input, $p3, :rule($rule), :suite('css3-backgrounds'),
                          :warnings($css_actions.warnings),
                          :expected(%test) );
 }
