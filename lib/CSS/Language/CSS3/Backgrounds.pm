@@ -3,7 +3,7 @@ use v6;
 class CSS::Language::CSS3::Backgrounds::Actions {...}
 
 use CSS::Language::CSS3::_Base;
-# CSS3 Paged Media Module Extensions
+# CSS3 Background Extensions
 # - reference: http://www.w3.org/TR/2012/CR-css3-background-20120724/
 #
 

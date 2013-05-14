@@ -4,8 +4,6 @@ use Test;
 
 use CSS::Language::CSS3::Backgrounds;
 
-# prepare our own composite class with font extensions
-
 use lib '.';
 use t::AST;
 
