@@ -22,10 +22,20 @@ use t::AST;
 my $css_actions = t::Actions.new;
 
 for (
-    declaration => {input => 'font-size: 8vw',
-             ast => {"property" => "font-size",
-                     "expr" => ["length" => 8]},
+    declaration => {input => 'font-size: 8vw', ast => {"property" => "font-size",
+                                                       "expr" => ["length" => 8]},
     },
+    declaration => {input => 'margin-left: 1.2rem', ast => {"property" => "margin-left",
+                                                            "expr" => ["length" => 1.2]},
+    },
+    declaration => {input => 'azimuth: .5turn', ast => {"property" => "azimuth",
+                                                        "expr" => ["angle" => .5],
+                                                        "_result" => ["angle" => .5],
+                                                        
+                    },
+    },
+    resolution      => {input => '5dppx',
+                        ast => 5, token => {type => 'resolution', units => 'dppx'}},
     ) {
     my $rule = $_.key;
     my %test = $_.value;
