@@ -7,7 +7,7 @@ constrction and/or tracking draft W3C standards.
 Current Contents
 ----------------
 - `CSS::Language::CSS3::Backgrounds` - Backgrounds and Borders
-- `CSS::Language::CSS3::Units` - Values and Units
+- `CSS::Language::CSS3::Values_and_Units`
 
 
 

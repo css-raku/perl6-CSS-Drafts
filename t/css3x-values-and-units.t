@@ -2,17 +2,17 @@
 
 use Test;
 
-use CSS::Language::CSS3::Units;
+use CSS::Language::CSS3::Values_and_Units;
 use CSS::Language::CSS3::CSS21_Imported;
 
 # define our own custom test classes. value extensions + css21 properties
 
 grammar t::Grammar
-    is CSS::Language::CSS3::Units
+    is CSS::Language::CSS3::Values_and_Units
     is CSS::Language::CSS3::CSS21_Imported::Grammar {};
 
 class t::Actions
-    is CSS::Language::CSS3::Units::Actions
+    is CSS::Language::CSS3::Values_and_Units::Actions
     is CSS::Language::CSS3::CSS21_Imported::Actions
  {};
 
