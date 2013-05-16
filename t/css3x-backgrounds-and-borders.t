@@ -2,12 +2,12 @@
 
 use Test;
 
-use CSS::Language::CSS3::Backgrounds;
+use CSS::Language::CSS3::Backgrounds_and_Borders;
 
 use lib '.';
 use t::AST;
 
-my $css_actions = CSS::Language::CSS3::Backgrounds::Actions.new;
+my $css_actions = CSS::Language::CSS3::Backgrounds_and_Borders::Actions.new;
 
 for (
     decl     => {input => 'background: url(a.png) top left no-repeat,
@@ -77,7 +77,7 @@ for (
     my $input = %test<input>;
 
     $css_actions.reset;
-    my $p3 = CSS::Language::CSS3::Backgrounds.parse( $input, :rule($rule), :actions($css_actions));
+    my $p3 = CSS::Language::CSS3::Backgrounds_and_Borders.parse( $input, :rule($rule), :actions($css_actions));
 
     t::AST::parse_tests($input, $p3, :rule($rule), :suite('css3-backgrounds'),
                          :warnings($css_actions.warnings),

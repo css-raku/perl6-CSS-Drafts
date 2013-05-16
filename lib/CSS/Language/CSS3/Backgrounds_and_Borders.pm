@@ -1,18 +1,18 @@
 use v6;
 
-class CSS::Language::CSS3::Backgrounds::Actions {...}
+class CSS::Language::CSS3::Backgrounds_and_Borders::Actions {...}
 
 use CSS::Language::CSS3::_Base;
-# CSS3 Background Extensions
+# CSS3 Background and Borders Extension Module
 # - reference: http://www.w3.org/TR/2012/CR-css3-background-20120724/
 #
 
-grammar CSS::Language::CSS3::Backgrounds::Syntax {
+grammar CSS::Language::CSS3::Backgrounds_and_Borders::Syntax {
 
 }
 
-grammar CSS::Language::CSS3::Backgrounds:ver<20120724.000>
-    is CSS::Language::CSS3::Backgrounds::Syntax
+grammar CSS::Language::CSS3::Backgrounds_and_Borders:ver<20120724.000>
+    is CSS::Language::CSS3::Backgrounds_and_Borders::Syntax
     is CSS::Language::CSS3::_Base {
 
     # ---- Properties ----#
@@ -118,7 +118,7 @@ grammar CSS::Language::CSS3::Backgrounds:ver<20120724.000>
 
 }
 
-class CSS::Language::CSS3::Backgrounds::Actions
+class CSS::Language::CSS3::Backgrounds_and_Borders::Actions
     is CSS::Language::CSS3::_Base::Actions {
 
     method attachment($/) { make $.token($<keyw>.ast) }
