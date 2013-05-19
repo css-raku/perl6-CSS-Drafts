@@ -36,6 +36,10 @@ for (
     },
     resolution      => {input => '5dppx',
                         ast => 5, token => {type => 'resolution', units => 'dppx'}},
+    # math calculations
+    declaration => {input => 'width: calc(100%/3 - 2*1em - 2*1px)',
+                    ast => Mu,
+    },
     ) {
     my $rule = $_.key;
     my %test = $_.value;
@@ -43,7 +47,7 @@ for (
 
     $css_actions.reset;
     my $p3 = t::Grammar.parse( $input, :rule($rule), :actions($css_actions));
-
+    note $p3;
     t::AST::parse_tests($input, $p3, :rule($rule), :suite('css3-units'),
                          :warnings($css_actions.warnings),
                          :expected(%test) );
