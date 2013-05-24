@@ -30,15 +30,41 @@ for (
     },
     declaration => {input => 'azimuth: .5turn', ast => {"property" => "azimuth",
                                                         "expr" => ["angle" => .5],
-                                                        "_result" => ["angle" => .5],
-                                                        
                     },
     },
     resolution      => {input => '5dppx',
                         ast => 5, token => {type => 'resolution', units => 'dppx'}},
     # math calculations
     declaration => {input => 'width: calc(100%/3 - 2*1em - 2*1px)',
-                    ast => Mu,
+                    ast => {"property" => "width",
+                            "expr" => ["length" => {"calc" => ["product" => ["unit" => {"percentage" => 100e0},
+                                                                             "op" => "/", "integer" => 3],
+                                                               "op" => "-",
+                                                               "product" => ["unit" => {"integer" => 2},
+                                                                             "op" => "*",
+                                                                             "unit" => {"dimension" => 1e0}],
+                                                               "op" => "-",
+                                                               "product" => ["unit" => {"integer" => 2},
+                                                                             "op" => "*",
+                                                                             "unit" => {"dimension" => 1e0}]]}
+                                ]
+                    },
+    },
+    declaration => {input => 'azimuth: calc(100%/3 - 2*1em - 2*1px)',
+                    ast => Any,
+                    warnings => 'expected an expresssion of type angle, got: length'
+    },
+    declaration => {input => 'azimuth: toggle(30deg, 60deg)',
+                    ast => {"property" => "azimuth",
+                            "expr" => ["angle" => {"toggle" => ["dimension" => 30e0, "dimension" => 60e0]}],
+                    },
+    },
+    declaration => {input => 'elevation: calc(.5turn - 30deg)',
+                    ast => {"property" => "elevation", "expr" => ["angle" => {"calc" => ["product" => ["unit" => {"dimension" => 0.5e0}], "op" => "-", "product" => ["unit" => {"dimension" => 30e0}]]}],
+                    },
+    },
+    declaration => {input => 'pause: calc(2s/3.1 - 100ms)',
+                    ast => {"property" => "pause", "expr" => ["pause-before" => ["time" => {"calc" => ["product" => ["unit" => {"dimension" => 2e0}, "op" => "/", "number" => 3.1e0], "op" => "-", "product" => ["unit" => {"dimension" => 100e0}]]}]]},
     },
     ) {
     my $rule = $_.key;
@@ -47,7 +73,7 @@ for (
 
     $css_actions.reset;
     my $p3 = t::Grammar.parse( $input, :rule($rule), :actions($css_actions));
-    note $p3;
+
     t::AST::parse_tests($input, $p3, :rule($rule), :suite('css3-units'),
                          :warnings($css_actions.warnings),
                          :expected(%test) );
