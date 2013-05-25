@@ -28,15 +28,14 @@ grammar CSS::Language::CSS3::Values_and_Units
     rule product { <unit> [ $<op>='*' <unit> | $<op>='/' [<integer> | <number>] ]* }
     rule attr    {:i 'attr(' <qname> [<type>|<unit-name>]? [ ',' [ <unit> | <calc> ] ]? ')' }
     rule unit    { <integer> | <number> | <dimension> | <percentage> | '(' <sum> ')' | <calc> | <attr> }
-    rule toggle  {:i 'toggle(' [<integer>|<number>|<dimension>|<percentage>] +% [ ',' ] ')' }
 
     token unit-name {<units=.angle-units>|<units=.distance-units>|<units=.rel-font-units>|<units=.resolution-units>}
 
     token type {:i [string|color|url|integer|number|length|angle|time|frequency] & <keyw> }
 
     # extend language grammars
-    rule math                  {<attr>|<toggle>}
-    rule math-calc             {<calc>|<attr>|<toggle>}
+    rule math                  {<attr>}
+    rule math-calc             {<calc>|<attr>}
     token length:sym<math>     {<math=.math-calc>}
     token frequency:sym<math>  {<math=.math-calc>}
     token angle:sym<math>      {<math=.math-calc>}
@@ -47,26 +46,19 @@ grammar CSS::Language::CSS3::Values_and_Units
     token url:sym<math>        {<math>}
     token string:sym<math>     {<math>}
 
-    # todo: handle keyword toggling:
-    # may require some refactoring of property declarations.
+    # override property rhs rule to enable funky property handling,
+    # i.e. expression toggling viz css3 values and units
+    # experimental!? can you toggle inherit, initial !?
+    rule rhs($expr)   {:i 'toggle(' $<expr>=[$expr:i:s +% [ ',' ]] ')' | $<expr>=$expr:i:s || <misc>} 
+
     #
     # extend core grammar
-    token term:sym<math>       {<calc>|<attr>|<toggle>}
+    token term:sym<math>       {<calc>|<attr>}
 
-    # override misc rule to catch and eventually handle toggled keywords
-    rule misc                  { <keyw-toggle> | <proforma>**0..1 <any-arg>* }
 };
 
 class CSS::Language::CSS3::Values_and_Units::Actions
     is CSS::Language::CSS3::_Base::Actions {
-
-    method misc($/) {
-        return $/.warning('tba - toggle(...) on keywords')
-            if $<keyw-toggle>;
-
-        make $<proforma>[0].ast
-            if $<proforma> && !$<any-arg>;
-    }
 
     method distance-units:sym<viewport>($/) { make $.token( $/.Str.lc, :type<length> ) }
     method rel-font-units($/) { make $.token( $/.Str.lc, :type<length> ) }
@@ -154,13 +146,6 @@ class CSS::Language::CSS3::Values_and_Units::Actions
     method unit($/)      { make $.token( $.node($/), :type($/.caps[0].value.ast.type)) }
     method type($/)      { make $<keyw>.ast }
     method unit-name($/) { make $<units>.ast }
-    method toggle($/)    {
-        my $list = $.list($/);
-        my @types = $list.map({$_.value.type});
-        my $type = @types.reduce({ $._coerce-types($^a, $^b) });
-
-        make $.token( $list, :type($type) );
-    }
 
     method _grok-expr($expr, $base-type) {
         my $expr-ast = $expr.ast;

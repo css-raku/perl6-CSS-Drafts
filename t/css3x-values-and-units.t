@@ -54,10 +54,8 @@ for (
                     ast => Any,
                     warnings => 'expected an expresssion of type angle, got: length'
     },
-    declaration => {input => 'azimuth: toggle(30deg, 60deg)',
-                    ast => {"property" => "azimuth",
-                            "expr" => ["angle" => {"toggle" => ["dimension" => 30e0, "dimension" => 60e0]}],
-                    },
+    declaration => {input => 'background-attachment: toggle(scroll, fixed)',
+                    ast => Mu,
     },
     declaration => {input => 'elevation: calc(.5turn - 30deg)',
                     ast => {"property" => "elevation", "expr" => ["angle" => {"calc" => ["product" => ["unit" => {"dimension" => 0.5e0}], "op" => "-", "product" => ["unit" => {"dimension" => 30e0}]]}],
