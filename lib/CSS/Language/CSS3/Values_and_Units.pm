@@ -23,51 +23,50 @@ grammar CSS::Language::CSS3::Values_and_Units
 
     # -- Math -- #
 
-    rule calc    {:i 'calc(' <sum> ')' }
-    rule sum     { <product> *% [<.ws>$<op>=['+'|'-']<.ws>] } 
-    rule product { <unit> [ $<op>='*' <unit> | $<op>='/' [<integer> | <number>] ]* }
-    rule attr    {:i 'attr(' <qname> [<type>|<unit-name>]? [ ',' [ <unit> | <calc> ] ]? ')' }
-    rule unit    { <integer> | <number> | <dimension> | <percentage> | '(' <sum> ')' | <calc> | <attr> }
+    rule math      {:i 'calc(' <calc=.sum> ')' }
+    rule sum       { <product> *% [<.ws>$<op>=['+'|'-']<.ws>] } 
+    rule product   { <unit> [ $<op>='*' <unit> | $<op>='/' [<integer> | <number>] ]* }
+    rule attr-expr {:i 'attr(' <attr-name=.qname> [<type>|<unit-name>]? [ ',' [ <unit> | <calc> ] ]? ')' }
+    rule unit      { <integer> | <number> | <dimension> | <percentage> | '(' <sum> ')' | <calc> | <attr-expr> }
 
     token unit-name {<units=.angle-units>|<units=.distance-units>|<units=.rel-font-units>|<units=.resolution-units>}
 
     token type {:i [string|color|url|integer|number|length|angle|time|frequency] & <keyw> }
 
     # extend language grammars
-    rule math                  {<attr>}
-    rule math-calc             {<calc>|<attr>}
-    token length:sym<math>     {<math=.math-calc>}
-    token frequency:sym<math>  {<math=.math-calc>}
-    token angle:sym<math>      {<math=.math-calc>}
-    token time:sym<math>       {<math=.math-calc>}
-    token resolution:sym<math> {<math=.math-calc>}
+    token length:sym<math>     {<math>}
+    token frequency:sym<math>  {<math>}
+    token angle:sym<math>      {<math>}
+    token time:sym<math>       {<math>}
+    token resolution:sym<math> {<math>}
 
-    token color:sym<math>      {<math>}
-    token url:sym<math>        {<math>}
-    token string:sym<math>     {<math>}
-
-    # override property rhs rule to enable funky property handling,
-    # i.e. expression toggling viz css3 values and units
+    # override property val rule to enable funky property handling,
+    # i.e. expression toggling attributes
     # experimental!? can you toggle inherit, initial !?
-    rule rhs($expr)   {:i 'toggle(' $<expr>=[$expr:i:s +% [ ',' ]] ')' | $<expr>=$expr:i:s || <misc>} 
+    rule toggle($expr) {:i 'toggle(' $<expr>=$expr:i +% [ ',' ] ')' }
+    rule attr($expr)   {:i 'attr(' <attr-name=.qname> [<type>|<unit-name>]? [ ',' $<fallback>=$expr:i ]? ')' }
+    rule val($expr)    {:i <toggle($expr)> | <attr($expr)> | $<expr>=$expr:i || <misc> } 
 
     #
     # extend core grammar
-    token term:sym<math>       {<calc>|<attr>}
+    token term:sym<math>       {<math>}
 
 };
 
 class CSS::Language::CSS3::Values_and_Units::Actions
     is CSS::Language::CSS3::_Base::Actions {
 
+    method val($/) {
+        my $node = $<toggle> || $<attr> ?? $/ !! $<expr>;
+        make $.node($node);
+    }
+
     method distance-units:sym<viewport>($/) { make $.token( $/.Str.lc, :type<length> ) }
     method rel-font-units($/) { make $.token( $/.Str.lc, :type<length> ) }
     method angle-units($/) { make $.token( $/.Str.lc, :type<angle> ) }
     method resolution-units($/) { make $.token( $/.Str.lc, :type<resolution> ) }
 
-    method calc($/) { make $.token( $<sum>.ast, :type( $/.caps[0].value.ast.type )) }
     method math($/) { make $.token( $.node($/), :type( $/.caps[0].value.ast.type )) }
-    method math-calc($/) { make $.token( $.node($/), :type( $/.caps[0].value.ast.type )) }
 
     method _coerce-types($lhs, $rhs) {
         return $lhs if $lhs eq $rhs;
@@ -136,7 +135,22 @@ class CSS::Language::CSS3::Values_and_Units::Actions
         make $.token( $expr, :type($type));
     }
 
+    method toggle($/) { make [ $<expr>.map({$.node($_)}) ] }
+
     method attr($/) {
+        my %ast = $.node($/);
+
+        %ast<fallback> = $.list($<fallback>)
+            if $<fallback>;
+
+        my $type = $<type> && $<type>.ast;
+        $type //= $<unit-name> && $<unit-name>.ast.type;
+        $type //= 'string';
+
+        make $.token( %ast, :type($type));
+    }
+
+    method attr-expr($/) {
         my $expr = $.list($/);
         my $type = $<type> && $<type>.ast;
         $type //= $<unit-name> && $<unit-name>.ast.type;
@@ -171,8 +185,5 @@ class CSS::Language::CSS3::Values_and_Units::Actions
     method angle:sym<math>($/) { make $._grok-expr($<math>, <angle>); }
     method time:sym<math>($/) { make $._grok-expr($<math>, <time>); }
     method resolution:sym<math>($/) { make $._grok-expr($<math>, <resolution>); }
-    method color:sym<math>($/) { make $._grok-expr($<math>, <color>); }
-    method url:sym<math>($/) { make $._grok-expr($<math>, <url>); }
-    method string:sym<math>($/) { make $._grok-expr($<math>, <string>); }
 
 };
