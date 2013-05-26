@@ -56,20 +56,20 @@ for (
     },
     declaration => {input => 'background-attachment: toggle(scroll, fixed)',
                     ast => {"property" => "background-attachment",
-                            "expr" => ["toggle" => [{"background-attachment" => ["keyw" => "scroll"]},
-                                                    {"background-attachment" => ["keyw" => "fixed"]}]]},
+                            "expr" => ["toggle" => [{"keyw" => "scroll"},
+                                                    {"keyw" => "fixed"}]]},
     },
     declaration => {input => 'font-style: toggle(italic, normal)',
                     ast => {"property" => "font-style",
-                            "expr" => ["toggle" => [{"font-style" => "italic"},
-                                                    {"font-style" => "normal"}]]
+                            "expr" => ["toggle" => [{"keyw" => "italic"},
+                                                    {"keyw" => "normal"}]]
                     },
     },
     declaration => {input => 'list-style-type: toggle(disc, circle, square)',
                     ast => {"property" => "list-style-type",
-                            "expr" => ["toggle" => [{"list-style-type" => ["keyw" => "disc"]},
-                                                    {"list-style-type" => ["keyw" => "circle"]},
-                                                    {"list-style-type" => ["keyw" => "square"]}]]
+                            "expr" => ["toggle" => [{"keyw" => "disc"},
+                                                    {"keyw" => "circle"},
+                                                    {"keyw" => "square"}]]
                     },
     },
     declaration => {input => 'width: attr(size px, auto)',
