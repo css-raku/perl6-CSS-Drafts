@@ -37,16 +37,16 @@ for (
     # math calculations
     declaration => {input => 'width: calc(100%/3 - 2*1em - 2*1px)',
                     ast => {"property" => "width",
-                            "expr" => ["length" => {"calc" => ["product" => ["unit" => {"percentage" => 100e0},
+                            "expr" => ["length" => {"calc" => ["product" => ["unit" => {"percentage" => 100},
                                                                              "op" => "/", "integer" => 3],
                                                                "op" => "-",
                                                                "product" => ["unit" => {"integer" => 2},
                                                                              "op" => "*",
-                                                                             "unit" => {"dimension" => 1e0}],
+                                                                             "unit" => {"dimension" => 1}],
                                                                "op" => "-",
                                                                "product" => ["unit" => {"integer" => 2},
                                                                              "op" => "*",
-                                                                             "unit" => {"dimension" => 1e0}]]}
+                                                                             "unit" => {"dimension" => 1}]]}
                                 ]
                     },
     },
@@ -79,11 +79,11 @@ for (
                                                   "fallback" => ["keyw" => "auto"]}]},
     },
     declaration => {input => 'elevation: calc(.5turn - 30deg)',
-                    ast => {"property" => "elevation", "expr" => ["angle" => {"calc" => ["product" => ["unit" => {"dimension" => 0.5e0}], "op" => "-", "product" => ["unit" => {"dimension" => 30e0}]]}],
+                    ast => {"property" => "elevation", "expr" => ["angle" => {"calc" => ["product" => ["unit" => {"dimension" => 0.5}], "op" => "-", "product" => ["unit" => {"dimension" => 30}]]}],
                     },
     },
     declaration => {input => 'pause: calc(2s/3.1 - 100ms)',
-                    ast => {"property" => "pause", "expr" => ["pause-before" => ["time" => {"calc" => ["product" => ["unit" => {"dimension" => 2e0}, "op" => "/", "number" => 3.1e0], "op" => "-", "product" => ["unit" => {"dimension" => 100e0}]]}]]},
+                    ast => {"property" => "pause", "expr" => ["pause-before" => ["time" => {"calc" => ["product" => ["unit" => {"dimension" => 2}, "op" => "/", "number" => 3.1], "op" => "-", "product" => ["unit" => {"dimension" => 100}]]}]]},
     },
     ) {
     my $rule = $_.key;

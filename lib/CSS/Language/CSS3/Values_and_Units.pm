@@ -135,15 +135,15 @@ class CSS::Language::CSS3::Values_and_Units::Actions
         make $.token( $expr, :type($type));
     }
 
-    method toggle($/) { make [ $<expr>.map({ $.node( %($_)<expr> // $_) }) ] }
+    method toggle($/) { make [ $<expr>.map({ $.node( %($_)<ref> // $_) }) ] }
 
     method attr($/) {
         my %ast = $.node($/);
 
         my $fallback = $<fallback>;
         # auto-dereference <expr>
-        $fallback = $fallback<expr>
-            while $fallback && $fallback<expr>;
+        $fallback = $fallback<ref>
+            while $fallback && $fallback<ref>;
         
         %ast<fallback> = $.list($<fallback>)
             if $<fallback>;
