@@ -29,7 +29,7 @@ grammar CSS::Language::CSS3::Backgrounds_and_Borders:ver<20120724.000>
     rule decl:sym<background> {:i (background) ':'  [ [ <ref=.bg-layer> ',' ]* <ref=.final-bg-layer> || <misc> ] }
 
     # - background-attachment: <attachment> [ , <attachment> ]*
-    rule decl:sym<background-attachment> {:i (background\-attachment) ':'  [ <ref=.attachment> [ ',' <attachment> ]* || <misc> ] }
+    rule decl:sym<background-attachment> {:i (background\-attachment) ':'  [ <ref=.attachment> +% ',' || <misc> ] }
 
     # - background-clip: <box> [ , <box> ]*
     # - background-origin: <box> [ , <box> ]*
