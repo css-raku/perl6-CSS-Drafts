@@ -43,9 +43,9 @@ grammar CSS::Language::CSS3::Values_and_Units
     # override property val rule to enable funky property handling,
     # i.e. expression toggling attributes
     # experimental!? can you toggle inherit, initial !?
-    rule toggle($expr) {:i 'toggle(' $<expr>=$expr:i +% [ ',' ] ')' }
+    rule toggle($expr) {:i 'toggle(' [ <proforma> | $<expr>=$expr:i ] +% [ ',' ] ')' }
     rule attr($expr)   {:i 'attr(' <attr-name=.qname> [<type>|<unit-name>]? [ ',' $<fallback>=$expr:i ]? ')' }
-    rule val($expr)    {:i <toggle($expr)> | <attr($expr)> | $<expr>=$expr:i || <misc> } 
+    rule val($expr)    {:i <proforma> | <toggle($expr)> | <attr($expr)> | $<expr>=$expr:i || <any-arg>* } 
 
     #
     # extend core grammar
