@@ -135,7 +135,18 @@ class CSS::Language::CSS3::Values_and_Units::Actions
         make $.token( $expr, :type($type));
     }
 
-    method toggle($/) { make [ $<expr>.map({ $.node( %($_)<ref> // $_) }) ] }
+    method toggle($/) { 
+
+        my @expr = $/.caps.map({
+            my ($name, $match) = $_.kv;
+
+            $name eq 'proforma'
+                ?? $match.ast
+                !! $.list($match<ref> // $match);
+        });
+
+        make @expr;
+    }
 
     method attr($/) {
         my %ast = $.node($/);

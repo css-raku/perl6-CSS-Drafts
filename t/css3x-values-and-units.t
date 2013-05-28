@@ -59,9 +59,10 @@ for (
                             "expr" => ["toggle" => [{"keyw" => "scroll"},
                                                     {"keyw" => "fixed"}]]},
     },
-    declaration => {input => 'font-style: toggle(italic, normal)',
+    declaration => {input => 'font-style: toggle(italic, inherit, normal)',
                     ast => {"property" => "font-style",
                             "expr" => ["toggle" => [{"keyw" => "italic"},
+                                                    {"inherit" => True},
                                                     {"keyw" => "normal"}]]
                     },
     },
