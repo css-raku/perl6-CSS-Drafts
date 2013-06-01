@@ -56,17 +56,12 @@ grammar CSS::Language::CSS3::Values_and_Units
 class CSS::Language::CSS3::Values_and_Units::Actions
     is CSS::Language::CSS3::_Base::Actions {
 
-    method val($/) {
-        my $node = $<toggle> || $<attr> ?? $/ !! $<expr>;
-        make $.node($node);
-    }
-
     method distance-units:sym<viewport>($/) { make $.token( $/.Str.lc, :type<length> ) }
     method rel-font-units($/) { make $.token( $/.Str.lc, :type<length> ) }
     method angle-units($/) { make $.token( $/.Str.lc, :type<angle> ) }
     method resolution-units($/) { make $.token( $/.Str.lc, :type<resolution> ) }
 
-    method math($/) { make $.token( $.node($/), :type( $/.caps[0].value.ast.type )) }
+    method math($/) { make $.token( $.node($/), :type( $<calc>.ast.type )) }
 
     method _coerce-types($lhs, $rhs) {
         return $lhs if $lhs eq $rhs;
@@ -138,11 +133,10 @@ class CSS::Language::CSS3::Values_and_Units::Actions
     method toggle($/) { 
 
         my @expr = $/.caps.map({
-            my ($name, $match) = $_.kv;
+            my ($_name, $match) = $_.kv;
 
-            $name eq 'proforma'
-                ?? $match.ast
-                !! $.list($match<ref> // $match);
+            $match<ref> ?? $match<ref>.ast !! $match.ast;
+
         });
 
         make @expr;
@@ -196,10 +190,10 @@ class CSS::Language::CSS3::Values_and_Units::Actions
         return $expr-ast;
     }
 
-    method length:sym<math>($/)  { make $._grok-expr($<math>, <length>); }
-    method frequency:sym<math>($/) { make $._grok-expr($<math>, <frequency>); }
-    method angle:sym<math>($/) { make $._grok-expr($<math>, <angle>); }
-    method time:sym<math>($/) { make $._grok-expr($<math>, <time>); }
+    method length:sym<math>($/)     { make $._grok-expr($<math>, <length>); }
+    method frequency:sym<math>($/)  { make $._grok-expr($<math>, <frequency>); }
+    method angle:sym<math>($/)      { make $._grok-expr($<math>, <angle>); }
+    method time:sym<math>($/)       { make $._grok-expr($<math>, <time>); }
     method resolution:sym<math>($/) { make $._grok-expr($<math>, <resolution>); }
 
 };

@@ -54,6 +54,7 @@ for (
                     ast => Any,
                     warnings => 'expected an expresssion of type angle, got: length'
     },
+    # toggles
     declaration => {input => 'background-attachment: toggle(scroll, fixed)',
                     ast => {"property" => "background-attachment",
                             "expr" => ["toggle" => [{"keyw" => "scroll"},
@@ -71,6 +72,13 @@ for (
                             "expr" => ["toggle" => [{"keyw" => "disc"},
                                                     {"keyw" => "circle"},
                                                     {"keyw" => "square"}]]
+                    },
+    },
+    declaration => {input => 'elevation: toggle(initial, below, above)',
+                    ast => {"property" => "elevation",
+                            "expr" => ["toggle" => [{"initial" => True},
+                                                    {"direction" => "below", "_implied" => "angle" => -90},
+                                                    {"direction" => "above", "_implied" => "angle" => 90}]]
                     },
     },
     declaration => {input => 'width: attr(size px, auto)',

@@ -121,11 +121,10 @@ grammar CSS::Language::CSS3::Backgrounds_and_Borders:ver<20120724.000>
 class CSS::Language::CSS3::Backgrounds_and_Borders::Actions
     is CSS::Language::CSS3::_Base::Actions {
 
-    method attachment($/) { make $.token($<keyw>.ast) }
     method image($/) {  make $<uri>.ast }
     method bg-image($/) {  make $.node($/) }
     method box($/) { make $.token($<keyw>.ast) }
-    method repeat-style($/) { make $.token($<keyw>.ast) }
+    method repeat-style($/) { make $.node($/)}
     method bg-layer($/) { make $.node($/) }
     method final-bg-layer($/) { make $.node($/) }
     # - background: [ <bg-layer> , ]* <final-bg-layer>
@@ -134,6 +133,7 @@ class CSS::Language::CSS3::Backgrounds_and_Borders::Actions
     }
 
     # - background-attachment: <attachment> [ , <attachment> ]*
+    method attachment($/) { make $.node($/) }
     method decl:sym<background-attachment>($/) {
         make $._decl($0, $<val>, q{<attachment> [ , <attachment> ]*});
     }
