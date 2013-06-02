@@ -3,20 +3,27 @@
 use Test;
 
 use CSS::Language::CSS3::Backgrounds_and_Borders;
+use CSS::Language::CSS3::CSS21_Imported;
 
 use lib '.';
 use t::AST;
 
-my $css_actions = CSS::Language::CSS3::Backgrounds_and_Borders::Actions.new;
+my $css3x_actions = CSS::Language::CSS3::Backgrounds_and_Borders::Actions.new;
+my $css21_actions = CSS::Language::CSS3::CSS21_Imported::Actions.new;
 
 for (
-    decl     => {input => 'background: url(a.png) top left no-repeat,
+    # failing some tests - see rakudo RT#117995
+    declaration => {input => 'background: url(a.png) top left no-repeat,
                                        url(b.png) center / 100% 100% no-repeat,
                                        url(c.png) white',
-                 ast => {"property" => "background",
-                         "expr" => ["bg-image" => {"image" => "a.png"}, "repeat-style" => "no-repeat",
-                                    "bg-image" => {"image" => "b.png"}, "bg-size" => ["percentage" => 100e0, "percentage" => 100e0], "repeat-style" => "no-repeat",
-                                    "bg-layer" => {"bg-image" => {"image" => "c.png"}}, "color" => {"r" => 255, "g" => 255, "b" => 255}]},
+                ast => {"property" => "background",
+                         "expr" => ["bg-layer" => ["bg-image" => ["image" => "a.png"], "position" => ["keyw" => "top", "keyw" => "left"], "repeat-style" => ["keyw" => "no-repeat"]],
+                                    "bg-layer" => ["bg-image" => ["image" => "b.png"], "position" => ["keyw" => "center"], "bg-size" => ["percentage" => 100, "percentage" => 100], "repeat-style" => ["keyw" => "no-repeat"]],
+                                    "bg-layer" => ["bg-layer" => ["bg-image" => ["image" => "c.png"]], "color" => {"r" => 255, "g" => 255, "b" => 255}]]},
+                 css21 => {
+                     warnings => rx{^extra terms},
+                     ast => Mu,
+                 },
     },
     declaration-list => {
         input => 'background-image: url(flower.png), url(ball.png), url(grass.png);
@@ -24,30 +31,49 @@ for (
                   background-origin: border-box, content-box;
                   background-repeat: no-repeat;',
 # 11-05-2013: test failing; waiting on RT#117955
-        ast => {"background-image"   => {"expr" => ["bg-image" => {"image" => "flower.png"},
-                                                    "bg-image" => {"image" => "ball.png"},
-                                                    "bg-image" => {"image" => "grass.png"}]},
+        ast => {"background-image"   => {"expr" => ["image" => "flower.png",
+                                                    "image" => "ball.png",
+                                                    "image" => "grass.png"]},
                 "background-position" => {"expr" => ["position" => ["keyw" => "center", "keyw" => "center"],
                                                      "position" => ["percentage" => 20, "percentage" => 80],
                                                      "position" => ["keyw" => "top", "keyw" => "left"],
                                                      "position" => ["keyw" => "botton", "keyw" => "right"]]},
                 "background-origin"   => {"expr" => ["box" => "border-box", "box" => "content-box"]},
-                "background-repeat"   => {"expr" => ["repeat-style" => "no-repeat"]}}
+                "background-repeat"   => {"expr" => ["repeat-style" => "no-repeat"]}},
+        css21 => {
+            ast => {"background-repeat" => {"expr" => ["keyw" => "no-repeat"]}},
+            warnings => rx{dropped},
+        },
     },
-    decl => { input => 'background-image: none', ast => {property => 'background-image', expr => [keyw => 'none']},
+    declaration => { input => 'background-image: none', ast => {property => 'background-image', expr => [keyw => 'none']},
     },
-    decl => { input => 'background-repeat: repeat-y', ast => {property => 'background-repeat', expr => [keyw => 'repeat-y']},
+    declaration => { input => 'background-repeat: repeat-y', ast => {property => 'background-repeat', expr => [keyw => 'repeat-y']},
     },
-    decl => { input => 'background-attachment: scroll', ast => {property => 'background-attachment', expr => [keyw => 'scroll']},
+    declaration => { input => 'background-attachment: scroll', ast => {property => 'background-attachment', expr => [keyw => 'scroll']},
     },
-    decl => { input => 'background-position: left 10px top 15px',
-              ast => {"property" => "background-position", "expr" => ["length" => 10e0, "keyw" => "top", "length" => 15]},
+    declaration => { input => 'background-position: left 10px top 15px',
+              ast => {"property" => "background-position", "expr" => [position => ["keyw" => "left", "length" => 10e0, "keyw" => "top", "length" => 15]]},
+              css21 => {
+                   ast => {"property" => "background-position", "expr" => ["keyw" => "left", "length" => 10e0, "keyw" => "top", "length" => 15]},
+              }
     },
-    decl => { input => 'background-clip: border-box, content-box', ast => {property => 'background-clip', expr => [box => 'border-box', box => 'content-box']},
+    declaration => { input => 'background-clip: border-box, content-box', ast => {property => 'background-clip', expr => [box => 'border-box', box => 'content-box']},
+                     css21 => {
+                         warnings => rx{unknown \s* property},
+                         ast => Mu,
+                     },
     },
-    decl => { input => 'background-origin:PADDING-Box', ast => {property => 'background-origin', expr => [box => 'padding-box']},
-    },
-    decl => { input => 'background-size: 50% auto', ast => {property => 'background-size', expr => [percentage => 50, keyw => 'auto']},
+    declaration => { input => 'background-origin:PADDING-Box', ast => {property => 'background-origin', expr => [box => 'padding-box']},
+                     css21 => {
+                         warnings => rx{unknown \s* property},
+                         ast => Mu,
+                     },
+   },
+    declaration => { input => 'background-size: 50% auto', ast => {property => 'background-size', expr => [size => [percentage => 50, keyw => 'auto']]},
+                    css21 => {
+                         warnings => rx{unknown \s* property},
+                         ast => Mu,
+                     },
     },
     declaration-list => {
         input => 'border-color: #abc green blue',
@@ -76,12 +102,22 @@ for (
     my %test = $_.value;
     my $input = %test<input>;
 
-    $css_actions.reset;
-    my $p3 = CSS::Language::CSS3::Backgrounds_and_Borders.parse( $input, :rule($rule), :actions($css_actions));
+    $css3x_actions.reset;
+    my $p3 = CSS::Language::CSS3::Backgrounds_and_Borders.parse( $input, :rule($rule), :actions($css3x_actions));
 
     t::AST::parse_tests($input, $p3, :rule($rule), :suite('css3-backgrounds'),
-                         :warnings($css_actions.warnings),
+                         :warnings($css3x_actions.warnings),
                          :expected(%test) );
+
+    $css21_actions.reset;
+    my $css21 = %test<css21> // {};
+    my %css21_expected = (%test, %$css21);
+
+    my $p-css21 = CSS::Language::CSS3::CSS21_Imported::Grammar.parse( $input, :rule($rule), :actions($css21_actions));
+
+    t::AST::parse_tests($input, $p-css21, :rule($rule), :suite('css21'),
+                         :warnings($css21_actions.warnings),
+                         :expected(%css21_expected) );
 }
 
 done;

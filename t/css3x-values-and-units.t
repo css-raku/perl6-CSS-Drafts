@@ -81,7 +81,13 @@ for (
                                                     {"direction" => "above", "_implied" => "angle" => 90}]]
                     },
     },
-    declaration => {input => 'width: attr(size px, auto)',
+     declaration => {input => 'elevation: attr(auto deg, below)',
+                    ast => {"property" => "elevation",
+                            "expr" => ["attr" => {"attr-name" => {"element-name" => "auto"}, "unit-name" => "deg",
+                                                  "fallback" => ["ref" => {"direction" => "below", "_implied" => "angle" => -90}]}]
+                    },
+    },
+   declaration => {input => 'width: attr(size px, auto)',
                     ast => {"property" => "width",
                             "expr" => ["attr" => {"attr-name" => {"element-name" => "size"},
                                                   "unit-name" => "px",

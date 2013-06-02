@@ -34,22 +34,21 @@ grammar CSS::Language::CSS3::Values_and_Units
     token type {:i [string|color|url|integer|number|length|angle|time|frequency] & <keyw> }
 
     # extend language grammars
-    token length:sym<math>     {<math>}
-    token frequency:sym<math>  {<math>}
-    token angle:sym<math>      {<math>}
-    token time:sym<math>       {<math>}
-    token resolution:sym<math> {<math>}
+    rule length:sym<math>     {<math>}
+    rule frequency:sym<math>  {<math>}
+    rule angle:sym<math>      {<math>}
+    rule time:sym<math>       {<math>}
+    rule resolution:sym<math> {<math>}
 
     # override property val rule to enable funky property handling,
     # i.e. expression toggling attributes
-    # experimental!? can you toggle inherit, initial !?
     rule toggle($expr) {:i 'toggle(' [ <proforma> | $<expr>=$expr:i ] +% [ ',' ] ')' }
     rule attr($expr)   {:i 'attr(' <attr-name=.qname> [<type>|<unit-name>]? [ ',' $<fallback>=$expr:i ]? ')' }
     rule val($expr)    {:i <proforma> | <toggle($expr)> | <attr($expr)> | $<expr>=$expr:i || <any-arg>* } 
 
     #
     # extend core grammar
-    token term:sym<math>       {<math>}
+    rule term:sym<math>       {<math>}
 
 };
 

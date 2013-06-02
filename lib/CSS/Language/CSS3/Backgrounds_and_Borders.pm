@@ -26,7 +26,7 @@ grammar CSS::Language::CSS3::Backgrounds_and_Borders:ver<20120724.000>
     rule bg-layer {:i [ <bg-image> | <position> [ '/' <bg-size> ]? | <repeat-style> | <attachment> | <box>**1..2 ] ** 1..5 }
     rule final-bg-layer { [ <bg-layer> | <color> ] ** 1..2}
     # - background: [ <bg-layer> , ]* <final-bg-layer>
-    rule decl:sym<background> {:i (background) ':'  <val(rx:s:i[ [ <ref=.bg-layer> ',' ]* <ref=.final-bg-layer> ])> }
+    rule decl:sym<background> {:i (background) ':'  <val(rx:s:i[ [ <bg-layer> ',' ]* <bg-layer=.final-bg-layer> ])> }
 
     # - background-attachment: <attachment> [ , <attachment> ]*
     rule decl:sym<background-attachment> {:i (background\-attachment) ':'  <val(rx:s:i[ <ref=.attachment> +% ',' ])> }
@@ -45,14 +45,14 @@ grammar CSS::Language::CSS3::Backgrounds_and_Borders:ver<20120724.000>
     # - background-position: <position> [ , <position> ]*
     # simplification of <position>
     rule position {:i [ <percentage> | <length> | [ [ left | center | right | top | bottom ] & <keyw> ] [ <percentage> | <length> ] ? ] ** 1..2 }
-    rule decl:sym<background-position> {:i (background\-position) ':'  <val(rx:s:i[ <ref=.position> +% ',' ])> }
+    rule decl:sym<background-position> {:i (background\-position) ':'  <val(rx:s:i[ <position> +% ',' ])> }
 
     # - background-repeat: <repeat-style> [ , <repeat-style> ]*
     rule decl:sym<background-repeat> {:i (background\-repeat) ':'  <val(rx:s:i[ <ref=.repeat-style> +% ',' ])> }
 
     # - background-size: <bg-size> [ , <bg-size> ]*
     rule bg-size {:i [ <length> | <percentage> | auto & <keyw> ] ** 1..2 | [cover | contain ] & <keyw> }
-    rule decl:sym<background-size> {:i (background\-size) ':'  <val(rx:s:i[ <ref=.bg-size> +% ',' ])> }
+    rule decl:sym<background-size> {:i (background\-size) ':'  <val(rx:s:i[ <size=.bg-size> +% ',' ])> }
 
     # - border: <border-width> || <border-style> || <color>
     rule border-style {:i [ none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset ] & <keyw> }
@@ -65,23 +65,23 @@ grammar CSS::Language::CSS3::Backgrounds_and_Borders:ver<20120724.000>
     rule decl:sym<border-image> {:i (border\-image) ':'  <val(rx:s:i[ [ <border-image-source> | <border-image-slice> [ [ '/' <border-image-width> | '/' <border-image-width>? '/' <border-image-outset> ] ]? | <border-image-repeat> ]**1..3 ])> }
 
     # - border-image-outset: [ <length> | <number> ]{1,4}
-    token border-image-outset {:i [ [ <length> | <number> ] ]**1..4 }
+    rule border-image-outset {:i [ [ <length> | <number> ] ]**1..4 }
     rule decl:sym<border-image-outset> {:i (border\-image\-outset) ':'  <val(rx:s:i[ <ref=.border-image-outset> ])> }
 
     # - border-image-repeat: [ stretch | repeat | round | space ]{1,2}
-    token border-image-repeat {:i [ [ stretch | repeat | round | space ] & <keyw> ]**1..2 }
+    rule border-image-repeat {:i [ [ stretch | repeat | round | space ] & <keyw> ]**1..2 }
     rule decl:sym<border-image-repeat> {:i (border\-image\-repeat) ':'  <val(rx:s:i[ <ref=.border-image-repeat> ])> }
 
     # - border-image-slice: [<number> | <percentage>]{1,4} 
-    token border-image-slice {:i [ [ <number> | <percentage> ] ]**1..4 }
+    rule border-image-slice {:i [ [ <number> | <percentage> ] ]**1..4 }
     rule decl:sym<border-image-slice> {:i (border\-image\-slice) ':'  <val(rx:s:i[ <ref=.border-image-slice> ])> }
 
     # - border-image-source: none | <image>
-    token border-image-source {:i none & <keyw> | <image> }
+    rule border-image-source {:i none & <keyw> | <image> }
     rule decl:sym<border-image-source> {:i (border\-image\-source) ':'  <val(rx:s:i[ <ref=.border-image-source> ])> }
 
     # - border-image-width: [ <length> | <percentage> | <number> | auto ]{1,4}
-    token border-image-width {:i [ [ <length> | <percentage> | <number> | auto & <keyw> ] ]**1..4 }
+    rule border-image-width {:i [ [ <length> | <percentage> | <number> | auto & <keyw> ] ]**1..4 }
     rule decl:sym<border-image-width> {:i (border\-image\-width) ':'  <val(rx:s:i[ <ref=.border-image-width> ])> }
 
     # - border-radius: [ <length> | <percentage> ]{1,4} [ / [ <length> | <percentage> ]{1,4} ]?
@@ -122,18 +122,18 @@ class CSS::Language::CSS3::Backgrounds_and_Borders::Actions
     is CSS::Language::CSS3::_Base::Actions {
 
     method image($/) {  make $<uri>.ast }
-    method bg-image($/) {  make $.node($/) }
+    method bg-image($/) {  make $.list($/) }
     method box($/) { make $.token($<keyw>.ast) }
-    method repeat-style($/) { make $.node($/)}
-    method bg-layer($/) { make $.node($/) }
-    method final-bg-layer($/) { make $.node($/) }
+    method repeat-style($/) { make $.list($/)}
+    method bg-layer($/) { make $.list($/) }
+    method final-bg-layer($/) { make $.list($/) }
     # - background: [ <bg-layer> , ]* <final-bg-layer>
     method decl:sym<background>($/) {
         make $._decl($0, $<val>, q{[ <bg-layer> , ]* <final-bg-layer>});
     }
 
     # - background-attachment: <attachment> [ , <attachment> ]*
-    method attachment($/) { make $.node($/) }
+    method attachment($/) { make $.list($/) }
     method decl:sym<background-attachment>($/) {
         make $._decl($0, $<val>, q{<attachment> [ , <attachment> ]*});
     }
@@ -228,7 +228,7 @@ class CSS::Language::CSS3::Backgrounds_and_Borders::Actions
     }
 
     # - border-[top|right|bottom|left]: <border-width> || <border-style> || <color>
-    method border-width($/) { make $.node($/) }
+    method border-width($/) { make $.list($/) }
     method decl:sym<border-[top|right|bottom|left]>($/) {
         make $._decl($0, $<val>, q{<border-width> || <border-style> || <color>});
     }
@@ -264,7 +264,7 @@ class CSS::Language::CSS3::Backgrounds_and_Borders::Actions
     }
 
     # - box-shadow: none | <shadow> [ , <shadow> ]*
-    method shadow($/) { make $.node($/) }
+    method shadow($/) { make $.list($/) }
     method decl:sym<box-shadow>($/) {
         make $._decl($0, $<val>, q{none | <shadow> [ , <shadow> ]*});
     }
