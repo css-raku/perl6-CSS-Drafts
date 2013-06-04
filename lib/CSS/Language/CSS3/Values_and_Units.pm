@@ -24,7 +24,8 @@ grammar CSS::Language::CSS3::Values_and_Units
     # -- Math -- #
 
     rule math      {:i 'calc(' <calc=.sum> ')' }
-    rule sum       { <product> *% [<.ws>$<op>=['+'|'-']<.ws>] } 
+    # should be '*%' - see rakudo rt #117831
+    rule sum       { <product> *%% [<.ws>$<op>=['+'|'-']<.ws>] } 
     rule product   { <unit> [ $<op>='*' <unit> | $<op>='/' [<integer> | <number>] ]* }
     rule attr-expr {:i 'attr(' <attr-name=.qname> [<type>|<unit-name>]? [ ',' [ <unit> | <calc> ] ]? ')' }
     rule unit      { <integer> | <number> | <dimension> | <percentage> | '(' <sum> ')' | <calc> | <attr-expr> }
@@ -181,7 +182,7 @@ class CSS::Language::CSS3::Values_and_Units::Actions
 
         my $type = $._coerce-types($base-type, $expr-type);
         if $type eq 'incompatible' {
-            $.warning("expected an expresssion of type {$base-type}, got: {$expr-type}", $/.Str);
+            $.warning("expected an expresssion of type {$base-type}, got: {$expr-type}", $expr.Str);
             return Any;
         }
 

@@ -1,6 +1,6 @@
 use v6;
 
-# volatile class; likely to vary over-time
+# volatile grammars and classes; likely to vary over-time
 
 use CSS::Language::CSS3::Values_and_Units;
 use CSS::Language::CSS3::Backgrounds_and_Borders;

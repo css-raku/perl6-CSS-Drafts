@@ -113,7 +113,7 @@ for (
     my $css21 = %test<css21> // {};
     my %css21_expected = (%test, %$css21);
 
-    my $p-css21 = CSS::Language::CSS3::CSS21_Imported::Grammar.parse( $input, :rule($rule), :actions($css21_actions));
+    my $p-css21 = CSS::Language::CSS3::CSS21_Imported.parse( $input, :rule($rule), :actions($css21_actions));
 
     t::AST::parse_tests($input, $p-css21, :rule($rule), :suite('css21'),
                          :warnings($css21_actions.warnings),

@@ -9,7 +9,7 @@ use CSS::Language::CSS3::CSS21_Imported;
 
 grammar t::Grammar
     is CSS::Language::CSS3::Values_and_Units
-    is CSS::Language::CSS3::CSS21_Imported::Grammar {};
+    is CSS::Language::CSS3::CSS21_Imported {};
 
 class t::Actions
     is CSS::Language::CSS3::Values_and_Units::Actions
@@ -52,7 +52,7 @@ for (
     },
     declaration => {input => 'azimuth: calc(100%/3 - 2*1em - 2*1px)',
                     ast => Any,
-                    warnings => 'expected an expresssion of type angle, got: length'
+                    warnings => rx{expected \s an \s expresssion \s of \s type \s angle\, \s got\: \s length}
     },
     # toggles
     declaration => {input => 'background-attachment: toggle(scroll, fixed)',
