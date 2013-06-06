@@ -12,18 +12,18 @@ my $css3x_actions = CSS::Language::CSS3::Backgrounds_and_Borders::Actions.new;
 my $css21_actions = CSS::Language::CSS3::CSS21_Imported::Actions.new;
 
 for (
-    # failing some tests - see rakudo RT#117995
     declaration => {input => 'background: url(a.png) top left no-repeat,
                                        url(b.png) center / 100% 100% no-repeat,
                                        url(c.png) white',
-                ast => {"property" => "background",
-                         "expr" => ["bg-layer" => ["bg-image" => ["image" => "a.png"], "position" => ["keyw" => "top", "keyw" => "left"], "repeat-style" => ["keyw" => "no-repeat"]],
-                                    "bg-layer" => ["bg-image" => ["image" => "b.png"], "position" => ["keyw" => "center"], "bg-size" => ["percentage" => 100, "percentage" => 100], "repeat-style" => ["keyw" => "no-repeat"]],
-                                    "bg-layer" => ["bg-layer" => ["bg-image" => ["image" => "c.png"]], "color" => {"r" => 255, "g" => 255, "b" => 255}]]},
-                 css21 => {
-                     warnings => rx{^extra terms},
-                     ast => Mu,
-                 },
+                    ast => {"property" => "background",
+                            "expr" => ["bg-layer" => ["bg-image" => ["image" => "a.png"], "position" => ["keyw" => "top", "keyw" => "left"], "repeat-style" => ["keyw" => "no-repeat"]],
+                                       "bg-layer" => ["bg-image" => ["image" => "b.png"], "position" => ["keyw" => "center"], "bg-size" => ["percentage" => 100, "percentage" => 100], "repeat-style" => ["keyw" => "no-repeat"]],
+                                       "bg-layer" => ["bg-layer" => ["bg-image" => ["image" => "c.png"]], "color" => {"r" => 255, "g" => 255, "b" => 255}]]},
+                    todo => {ast => "rakudo RT#117995 - '&' capture"},
+                    css21 => {
+                        warnings => rx{^extra \s terms},
+                        ast => Mu,
+                    },
     },
     declaration-list => {
         input => 'background-image: url(flower.png), url(ball.png), url(grass.png);
@@ -40,6 +40,7 @@ for (
                                                      "position" => ["keyw" => "botton", "keyw" => "right"]]},
                 "background-origin"   => {"expr" => ["box" => "border-box", "box" => "content-box"]},
                 "background-repeat"   => {"expr" => ["repeat-style" => "no-repeat"]}},
+        todo => {ast => "rakudo RT#117995 - '&' capture"},
         css21 => {
             ast => {"background-repeat" => {"expr" => ["keyw" => "no-repeat"]}},
             warnings => rx{dropped},
@@ -52,10 +53,11 @@ for (
     declaration => { input => 'background-attachment: scroll', ast => {property => 'background-attachment', expr => [keyw => 'scroll']},
     },
     declaration => { input => 'background-position: left 10px top 15px',
-              ast => {"property" => "background-position", "expr" => [position => ["keyw" => "left", "length" => 10e0, "keyw" => "top", "length" => 15]]},
-              css21 => {
-                   ast => {"property" => "background-position", "expr" => ["keyw" => "left", "length" => 10e0, "keyw" => "top", "length" => 15]},
-              }
+                     ast => {"property" => "background-position", "expr" => [position => ["keyw" => "left", "length" => 10e0, "keyw" => "top", "length" => 15]]},
+                     todo => {ast => "rakudo RT#117995 - '&' capture"},
+                     css21 => {
+                         ast => {"property" => "background-position", "expr" => ["keyw" => "left", "length" => 10e0, "keyw" => "top", "length" => 15]},
+                     },
     },
     declaration => { input => 'background-clip: border-box, content-box', ast => {property => 'background-clip', expr => [box => 'border-box', box => 'content-box']},
                      css21 => {
