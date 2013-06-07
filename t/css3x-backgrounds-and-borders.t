@@ -19,7 +19,7 @@ for (
                             "expr" => ["bg-layer" => ["bg-image" => ["image" => "a.png"], "position" => ["keyw" => "top", "keyw" => "left"], "repeat-style" => ["keyw" => "no-repeat"]],
                                        "bg-layer" => ["bg-image" => ["image" => "b.png"], "position" => ["keyw" => "center"], "bg-size" => ["percentage" => 100, "percentage" => 100], "repeat-style" => ["keyw" => "no-repeat"]],
                                        "bg-layer" => ["bg-layer" => ["bg-image" => ["image" => "c.png"]], "color" => {"r" => 255, "g" => 255, "b" => 255}]]},
-                    todo => {ast => "rakudo RT#117995 - '&' capture"},
+                    todo => {ast => "rakudo RT#117955 - '&' capture"},
                     css21 => {
                         warnings => rx{^extra \s terms},
                         ast => Mu,
@@ -40,10 +40,11 @@ for (
                                                      "position" => ["keyw" => "botton", "keyw" => "right"]]},
                 "background-origin"   => {"expr" => ["box" => "border-box", "box" => "content-box"]},
                 "background-repeat"   => {"expr" => ["repeat-style" => "no-repeat"]}},
-        todo => {ast => "rakudo RT#117995 - '&' capture"},
+        todo => {ast => "rakudo RT#117955 - '&' capture"},
         css21 => {
             ast => {"background-repeat" => {"expr" => ["keyw" => "no-repeat"]}},
             warnings => rx{dropped},
+            todo => {},
         },
     },
     declaration => { input => 'background-image: none', ast => {property => 'background-image', expr => [keyw => 'none']},
@@ -54,7 +55,7 @@ for (
     },
     declaration => { input => 'background-position: left 10px top 15px',
                      ast => {"property" => "background-position", "expr" => [position => ["keyw" => "left", "length" => 10e0, "keyw" => "top", "length" => 15]]},
-                     todo => {ast => "rakudo RT#117995 - '&' capture"},
+                     todo => {ast => "rakudo RT#117955 - '&' capture"},
                      css21 => {
                          ast => {"property" => "background-position", "expr" => ["keyw" => "left", "length" => 10e0, "keyw" => "top", "length" => 15]},
                      },

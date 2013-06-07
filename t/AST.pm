@@ -37,7 +37,6 @@ module t::AST {
         }
 
         if defined (my $ast = %expected<ast>) {
-            note 'todo:'~%expected<todo> if %expected<todo>;
             if my $todo-ast = %expected<todo><ast> {
                 todo($todo-ast);
             }
