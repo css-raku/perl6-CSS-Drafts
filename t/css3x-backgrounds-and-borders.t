@@ -4,9 +4,7 @@ use Test;
 
 use CSS::Language::CSS3::Backgrounds_and_Borders;
 use CSS::Language::CSS3::CSS21_Imported;
-
-use lib '.';
-use t::AST;
+use CSS::Grammar::Test;
 
 my $css3x_actions = CSS::Language::CSS3::Backgrounds_and_Borders::Actions.new;
 my $css21_actions = CSS::Language::CSS3::CSS21_Imported::Actions.new;
@@ -108,7 +106,7 @@ for (
     $css3x_actions.reset;
     my $p3 = CSS::Language::CSS3::Backgrounds_and_Borders.parse( $input, :rule($rule), :actions($css3x_actions));
 
-    t::AST::parse_tests($input, $p3, :rule($rule), :suite('css3-backgrounds'),
+    CSS::Grammar::Test::parse_tests($input, $p3, :rule($rule), :suite('css3-backgrounds'),
                          :warnings($css3x_actions.warnings),
                          :expected(%test) );
 
@@ -118,7 +116,7 @@ for (
 
     my $p-css21 = CSS::Language::CSS3::CSS21_Imported.parse( $input, :rule($rule), :actions($css21_actions));
 
-    t::AST::parse_tests($input, $p-css21, :rule($rule), :suite('css21'),
+    CSS::Grammar::Test::parse_tests($input, $p-css21, :rule($rule), :suite('css21'),
                          :warnings($css21_actions.warnings),
                          :expected(%css21_expected) );
 }
