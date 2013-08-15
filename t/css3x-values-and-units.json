@@ -3,7 +3,7 @@
 [ "declaration", { "input" : "azimuth: .5turn", "ast" : { "property" : "azimuth", "expr" : [ { "angle" : 0.5 } ] } } ]
 [ "resolution", { "input" : "5dppx", "ast" : 5, "token" : { "type" : "resolution", "units" : "dppx" } } ]
 [ "declaration", { "input" : "width: calc(100%/3 - 2*1em - 2*1px)", "ast" : { "property" : "width", "expr" : [ { "length" : { "calc" : [ { "product" : [ { "unit" : { "percentage" : 100 } }, { "op" : "/" }, { "integer" : 3 } ] }, { "op" : "-" }, { "product" : [ { "unit" : { "integer" : 2 } }, { "op" : "*" }, { "unit" : { "dimension" : 1 } } ] }, { "op" : "-" }, { "product" : [ { "unit" : { "integer" : 2 } }, { "op" : "*" }, { "unit" : { "dimension" : 1 } } ] } ] } } ] } } ]
-[ "declaration", { "input" : "azimuth: calc(100%/3 - 2*1em - 2*1px)", "ast" : null, "warnings-todo" : "expected \\s an \\s expresssion \\s of \\s type \\s angle\\, \\s got\\: \\s length" } ]
+[ "declaration", { "input" : "azimuth: calc(100%/3 - 2*1em - 2*1px)", "ast" : null, "warnings" : "expected an expresssion of type angle, got: length: calc(100%/3 - 2*1em - 2*1px)" } ]
 [ "declaration", { "input" : "background-attachment: toggle(scroll, fixed)", "ast" : { "property" : "background-attachment", "expr" : [ { "toggle" : [ { "keyw" : "scroll" }, { "keyw" : "fixed" } ] } ] } } ]
 [ "declaration", { "input" : "font-style: toggle(italic, inherit, normal)", "ast" : { "property" : "font-style", "expr" : [ { "toggle" : [ { "keyw" : "italic" }, { "inherit" : true }, { "keyw" : "normal" } ] } ] } } ]
 [ "declaration", { "input" : "list-style-type: toggle(disc, circle, square)", "ast" : { "property" : "list-style-type", "expr" : [ { "toggle" : [ { "keyw" : "disc" }, { "keyw" : "circle" }, { "keyw" : "square" } ] } ] } } ]
