@@ -18,7 +18,7 @@ class t::Actions
     is CSS::Language::CSS3::CSS21_Imported::Actions
  {};
 
-my $css_actions = t::Actions.new;
+my $actions = t::Actions.new;
 
 my $fh = open 't/css3x-values-and-units.json', :r;
 
@@ -31,12 +31,10 @@ for ( $fh.lines ) {
     my ($rule, %test) = @( from-json($_) );
     my $input = %test<input>;
 
-    $css_actions.reset;
-    my $p3 = t::Grammar.parse( $input, :rule($rule), :actions($css_actions));
-
-    CSS::Grammar::Test::parse_tests($input, $p3, :rule($rule), :suite('css3-units'),
-                         :warnings($css_actions.warnings),
-                         :expected(%test) );
+    CSS::Grammar::Test::parse-tests(t::Grammar, $input, :rule($rule),
+				    :suite<css3-units>,
+				    :actions($actions),
+				    :expected(%test) );
 }
 
 done;
