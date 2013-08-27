@@ -7,12 +7,7 @@ use CSS::Language::CSS3::_Base;
 # - reference: http://www.w3.org/TR/2012/CR-css3-background-20120724/
 #
 
-grammar CSS::Language::CSS3::Backgrounds_and_Borders::Syntax {
-
-}
-
 grammar CSS::Language::CSS3::Backgrounds_and_Borders:ver<20120724.000>
-    is CSS::Language::CSS3::Backgrounds_and_Borders::Syntax
     is CSS::Language::CSS3::_Base {
 
     # ---- Properties ----#
