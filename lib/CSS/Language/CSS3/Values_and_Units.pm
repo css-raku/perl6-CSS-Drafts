@@ -24,8 +24,7 @@ grammar CSS::Language::CSS3::Values_and_Units
     # -- Math -- #
 
     rule math      {:i 'calc(' <calc=.sum> ')' }
-    # should be '*%' - see rakudo rt #117831
-    rule sum       { <product> *%% [<.ws>$<op>=['+'|'-']<.ws>] } 
+    rule sum       { <product> *% [<.ws>$<op>=['+'|'-']<.ws>] } 
     rule product   { <unit> [ $<op>='*' <unit> | $<op>='/' [<integer> | <number>] ]* }
     rule attr-expr {:i 'attr(' <attr-name=.qname> [<type>|<unit-name>]? [ ',' [ <unit> | <calc> ] ]? ')' }
     rule unit      { <integer> | <number> | <dimension> | <percentage> | '(' <sum> ')' | <calc> | <attr-expr> }
@@ -64,11 +63,15 @@ class CSS::Language::CSS3::Values_and_Units::Actions
     method math($/) { make $.token( $.node($/), :type( $<calc>.ast.type )) }
 
     method _coerce-types($lhs, $rhs) {
-        return $lhs if $lhs eq $rhs;
-        return 'number' if ($lhs, $rhs).sort eqv ('integer', 'number');
-        return $rhs if $lhs eq 'percentage';
-        return $lhs if $rhs eq 'percentage';
-        return 'incompatible';
+        return do {
+            when $lhs eq $rhs             {$lhs}
+            when $lhs eq 'percentage'     {$rhs} 
+            when $rhs eq 'percentage'     {$lhs} 
+            when ($lhs, $rhs).sort
+                eqv ('integer', 'number') {'number'}
+ 
+            default {'incompatible'}
+        }
     }
 
     method _resolve-op-type:sym<+>($lhs,$rhs) {
