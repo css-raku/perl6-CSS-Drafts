@@ -19,7 +19,7 @@ grammar CSS::Language::CSS3::Values_and_Units
     token rel-font-units   {:i[em|ex|ch|rem]}
     token angle-units      {:i[deg|rad|rad|turn]}
     # override/extend css::language::css3::_base <resolution-units>
-    token resolution-units {:i[dpi|dpcm|dppx]}
+    token resolution-units {:i dp[i|cm|px]}
 
     # -- Math -- #
 
@@ -55,10 +55,10 @@ grammar CSS::Language::CSS3::Values_and_Units
 class CSS::Language::CSS3::Values_and_Units::Actions
     is CSS::Language::CSS3::_Base::Actions {
 
-    method distance-units:sym<viewport>($/) { make $.token( $/.Str.lc, :type<length> ) }
-    method rel-font-units($/) { make $.token( $/.Str.lc, :type<length> ) }
-    method angle-units($/) { make $.token( $/.Str.lc, :type<angle> ) }
-    method resolution-units($/) { make $.token( $/.Str.lc, :type<resolution> ) }
+    method distance-units:sym<viewport>($/) { make $.token( (~$/).lc, :type<length> ) }
+    method rel-font-units($/) { make $.token(   (~$/).lc, :type<length> ) }
+    method angle-units($/) { make $.token(      (~$/).lc, :type<angle> ) }
+    method resolution-units($/) { make $.token( (~$/).lc, :type<resolution> ) }
 
     method math($/) { make $.token( $.node($/), :type( $<calc>.ast.type )) }
 
@@ -87,15 +87,17 @@ class CSS::Language::CSS3::Values_and_Units::Actions
         my $l-int = $lhs eq 'integer';
         my $r-int = $rhs eq 'integer';
 
-        return 'integer' if $l-int && $r-int;
+        return do {
+           when $l-int && $r-int {'integer'}
 
-        my $l-num = $l-int || $lhs eq 'number';
-        my $r-num = $r-int || $rhs eq 'number';
+           my $l-num = $l-int || $lhs eq 'number';
+           my $r-num = $r-int || $rhs eq 'number';
 
-        return 'number' if $l-num && $r-num;
-        return $lhs if $r-num;
-        return $rhs if $l-num;
-        return 'incompatible';
+           when $l-num && $r-num {'number'}
+           when $r-num           {$lhs}
+           when $l-num           {$rhs}
+           default               {'incompatible'}
+        }
     }
 
     method _resolve-op-type:sym</>($lhs,$rhs) {
@@ -179,13 +181,13 @@ class CSS::Language::CSS3::Values_and_Units::Actions
 
         my $expr-type = $expr-ast.type;
         if $expr-type eq 'incompatible' {
-            $.warning("incompatible types in expression", $/.Str);
+            $.warning("incompatible types in expression", ~$/);
             return Any;
         }
 
         my $type = $._coerce-types($base-type, $expr-type);
         if $type eq 'incompatible' {
-            $.warning("expected an expresssion of type {$base-type}, got: {$expr-type}", $expr.Str);
+            $.warning("expected an expresssion of type {$base-type}, got: {$expr-type}", ~$expr);
             return Any;
         }
 
