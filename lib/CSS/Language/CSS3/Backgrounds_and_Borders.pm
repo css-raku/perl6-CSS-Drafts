@@ -13,7 +13,7 @@ grammar CSS::Language::CSS3::Backgrounds_and_Borders:ver<20120724.000>
     # ---- Properties ----#
 
     rule attachment   {:i [ scroll | fixed | local ] & <keyw> }
-    rule image {<uri>}
+    rule image        {<uri>}
     rule bg-image     {:i <image> | none & <keyw> }
     rule box          {:i [  border\-box | padding\-box | content\-box ] & <keyw> }
     rule repeat-style {:i [ repeat\-x | repeat\-y ] & <keyw>
@@ -51,13 +51,13 @@ grammar CSS::Language::CSS3::Backgrounds_and_Borders:ver<20120724.000>
 
     # - border: <border-width> || <border-style> || <color>
     rule border-style {:i [ none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset ] & <keyw> }
-    rule decl:sym<border> {:i (border) ':'  [ [ <border-width> | <border-style> | <color> ]**1..3 || <misc> ] }
+    rule decl:sym<border> {:i (border) ':'  <val(rx:s:i[:my @*SEEN; [ <border-width> <!seen(0)> | <border-style> <!seen(1)> | <color> <!seen(2)> ]+ ])> }
 
     # - border-color: <color>{1,4}
     rule decl:sym<border-color> {:i (border\-color) ':'  <val(rx:s:i[ <color>**1..4 ])> }
 
     # - border-image: <‘border-image-source’> || <‘border-image-slice’> [ / <‘border-image-width’> | / <‘border-image-width’>? / <‘border-image-outset’> ]? || <‘border-image-repeat’>
-    rule decl:sym<border-image> {:i (border\-image) ':'  <val(rx:s:i[ [ <border-image-source> | <border-image-slice> [ [ '/' <border-image-width> | '/' <border-image-width>? '/' <border-image-outset> ] ]? | <border-image-repeat> ]**1..3 ])> }
+    rule decl:sym<border-image> {:i (border\-image) ':'  <val(rx:s:i[:my @*SEEN; [ <border-image-source> <!seen(0)> | <border-image-slice> [ [ '/' <border-image-width> | '/' <border-image-width>? '/' <border-image-outset> ] ]? <!seen(1)> | <border-image-repeat> <!seen(2)> ]+ ])> }
 
     # - border-image-outset: [ <length> | <number> ]{1,4}
     rule border-image-outset {:i [ [ <length> | <number> ] ]**1..4 }
@@ -87,10 +87,10 @@ grammar CSS::Language::CSS3::Backgrounds_and_Borders:ver<20120724.000>
 
     # - border-[top|right|bottom|left]: <border-width> || <border-style> || <color>
     rule border-width {:i <length> | [ thin | medium | thick ] & <keyw> }
-    rule decl:sym<border-[top|right|bottom|left]> {:i (border\-[top|right|bottom|left]) ':'  <val(rx:s:i[ [ <border-width> | <border-style> | <color> ]**1..3 || ])> }
+    rule decl:sym<border-[top|right|bottom|left]> {:i (border\-[top|right|bottom|left]) ':'  <val(rx:s:i[:my @*SEEN; [ <border-width> <!seen(0)> | <border-style> <!seen(1)> | <color> <!seen(2)> ]+ ])> }
 
     # - border-[top|right|bottom|left]-color: <color>
-    rule decl:sym<border-[top|right|bottom|left]-color> {:i (border\-[top|right|bottom|left]\-color) ':'  [ <color> || <misc> ] }
+    rule decl:sym<border-[top|right|bottom|left]-color> {:i (border\-[top|right|bottom|left]\-color) ':'  <val(rx:s:i[ <color> ])> }
 
     # - border-[top-left|top-right|bottom-right|bottom-left]-radius: [ <length> | <percentage> ]{1,2}
     rule decl:sym<border-[top|bottom]-[left|right]-radius> {:i (border\-[top|bottom]\-[left|right]\-radius) ':'  <val(rx:s:i[ [ [ <length> | <percentage> ] ]**1..2 ])> }
