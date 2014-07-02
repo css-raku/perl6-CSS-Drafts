@@ -62,7 +62,7 @@ grammar CSS::Language::CSS3::Backgrounds_and_Borders::Spec::Grammar {
 
     #= border-image-slice: [<number> | <percentage>]{1,4} && fill?
     rule decl:sym<border-image-slice> {:i (border\-image\-slice) ':'  [ <proforma> || <expr=.expr-border-image-slice> || <any-args> ] }
-    rule expr-border-image-slice {:i [:my @*SEEN; [ [ <number> | <percentage> ] ]**1..4 <!seen(0)> | fill & <keyw>? <!seen(1)> ]**2 }
+    rule expr-border-image-slice {:i [:my @*SEEN; [ [ <number> | <percentage> ] ]**1..4 <!seen(0)> | [ fill & <keyw> ]? <!seen(1)> ]**2 }
 
     #= border-image-source: none | <image>
     rule decl:sym<border-image-source> {:i (border\-image\-source) ':'  [ <proforma> || <expr=.expr-border-image-source> || <any-args> ] }
