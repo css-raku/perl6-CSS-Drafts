@@ -6,6 +6,8 @@ role CSS::Language::CSS3::Backgrounds_and_Borders::Spec::Interface {
     method bg-image($/) { ... }
     method bg-layer($/) { ... }
     method bg-size($/) { ... }
+    method border-style($/) { ... }
+    method border-width($/) { ... }
     method box($/) { ... }
     method color($/) { ... }
     method final-bg-layer($/) { ... }
