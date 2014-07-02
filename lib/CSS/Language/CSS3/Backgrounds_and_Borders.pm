@@ -35,8 +35,6 @@ class CSS::Language::CSS3::Backgrounds_and_Borders::Actions
     is CSS::Language::CSS3::Backgrounds_and_Borders::Spec::Actions
     does CSS::Language::CSS3::Backgrounds_and_Borders::Spec::Interface {
 
-        proto method color {*}
-
     method image($/) { make $<uri>.ast }
     method bg-image($/) {  make $.list($/) }
     method box($/) { make $.token($<keyw>.ast) }
