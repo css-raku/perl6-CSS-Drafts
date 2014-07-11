@@ -3,12 +3,12 @@ use v6;
 # This class implements CSS3 Values and Units Module Level 3
 # - reference: http://www.w3.org/TR/2013/CR-css3-values-20130404/
 #
-class CSS::Language::CSS3::Values_and_Units::Actions {...}
+class CSS::Module::CSS3::Values_and_Units::Actions {...}
 
-use CSS::Language::CSS3::_Base;
+use CSS::Module::CSS3::_Base;
 
-grammar CSS::Language::CSS3::Values_and_Units
-    is CSS::Language::CSS3::_Base {
+grammar CSS::Module::CSS3::Values_and_Units
+    is CSS::Module::CSS3::_Base {
 
     # -- Units -- #
 
@@ -52,8 +52,8 @@ grammar CSS::Language::CSS3::Values_and_Units
 
 };
 
-class CSS::Language::CSS3::Values_and_Units::Actions
-    is CSS::Language::CSS3::_Base::Actions {
+class CSS::Module::CSS3::Values_and_Units::Actions
+    is CSS::Module::CSS3::_Base::Actions {
 
     method distance-units:sym<viewport>($/) { make $.token( (~$/).lc, :type<length> ) }
     method rel-font-units($/) { make $.token(   (~$/).lc, :type<length> ) }
