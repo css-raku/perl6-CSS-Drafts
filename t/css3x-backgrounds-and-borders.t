@@ -4,11 +4,12 @@ use Test;
 use JSON::Tiny;
 
 use CSS::Module::CSS3::Backgrounds_and_Borders;
-use CSS::Module::CSS3::CSS21_Imported;
+use CSS::Module::CSS21;
+use CSS::Module::CSS21::Actions;
 use CSS::Grammar::Test;
 
 my $css3x-actions = CSS::Module::CSS3::Backgrounds_and_Borders::Actions.new;
-my $css21-actions = CSS::Module::CSS3::CSS21_Imported::Actions.new;
+my $css21-actions = CSS::Module::CSS21::Actions.new;
 
 my $fh = open 't/css3x-backgrounds-and-borders.json', :r;
 
@@ -32,7 +33,7 @@ for ( $fh.lines ) {
     my %css21_expected = (%test, %$css21);
 
     CSS::Grammar::Test::parse-tests(
-	CSS::Module::CSS3::CSS21_Imported, $input, 
+	CSS::Module::CSS21, $input, 
 	:rule($rule),
 	:actions($css21-actions),
 	:suite<css21-imported>,
