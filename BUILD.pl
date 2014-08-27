@@ -24,7 +24,7 @@ multi MAIN( Bool :$interfaces=True, Bool :$grammars=True, Bool :$actions=True ) 
             my $class-path = (<lib CSS Module>, @$class-isa, <Spec>, $subclass).join('/');
             my $perl6 = $*EXECUTABLE_NAME;
             # See CSS::Specification
-            my $cmd = "perl6 css-gen-properties.pl --{$opt}={$class-name}$flags $spec > {$class-path}.pm";
+            my $cmd = "css-gen-properties.pl --{$opt}={$class-name}$flags $spec > {$class-path}.pm";
             say $cmd;
             shell $cmd;
         }

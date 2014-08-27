@@ -7,6 +7,7 @@ use CSS::Grammar::Test;
 use CSS::Module::CSS3::Values_and_Units;
 use CSS::Module::CSS21;
 use CSS::Module::CSS21::Actions;
+use CSS::Module::CSS3::_Base;
 
 # define our own custom test classes. value extensions + css21 properties
 
@@ -18,8 +19,7 @@ grammar t::Grammar
 class t::Actions
     is CSS::Module::CSS3::Values_and_Units::Actions
     is CSS::ModuleX::CSS21::Actions
-    is CSS::Module::CSS3::_Base::Actions
- {};
+    is CSS::Module::CSS3::_Base::Actions {};
 
 my $actions = t::Actions.new;
 
