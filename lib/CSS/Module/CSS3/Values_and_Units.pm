@@ -5,10 +5,7 @@ use v6;
 #
 class CSS::Module::CSS3::Values_and_Units::Actions {...}
 
-use CSS::Module::CSS3::_Base;
-
-grammar CSS::Module::CSS3::Values_and_Units
-    is CSS::Module::CSS3::_Base {
+grammar CSS::Module::CSS3::Values_and_Units {
 
     # -- Units -- #
 
@@ -52,8 +49,7 @@ grammar CSS::Module::CSS3::Values_and_Units
 
 };
 
-class CSS::Module::CSS3::Values_and_Units::Actions
-    is CSS::Module::CSS3::_Base::Actions {
+class CSS::Module::CSS3::Values_and_Units::Actions {
 
     method distance-units:sym<viewport>($/) { make $.token( (~$/).lc, :type<length> ) }
     method rel-font-units($/) { make $.token(   (~$/).lc, :type<length> ) }

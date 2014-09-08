@@ -5,15 +5,12 @@ use v6;
 #
 class CSS::Module::CSS3::Backgrounds_and_Borders::Actions {...}
 
-use CSS::Module::CSS3::_Base;
 use CSS::Module::CSS3::Backgrounds_and_Borders::Spec::Interface;
 use CSS::Module::CSS3::Backgrounds_and_Borders::Spec::Grammar;
 use CSS::Module::CSS3::Backgrounds_and_Borders::Spec::Actions;
 
 grammar CSS::Module::CSS3::Backgrounds_and_Borders:ver<20120724.000>
-    is CSS::Module::CSS3::_Base
-    is CSS::Module::CSS3::Backgrounds_and_Borders::Spec::Grammar
-    does CSS::Module::CSS3::Backgrounds_and_Borders::Spec::Interface {
+    is CSS::Module::CSS3::Backgrounds_and_Borders::Spec::Grammar {
 
     rule attachment   {:i [ scroll | fixed | local ] & <keyw> }
     rule image        {<uri>}
@@ -31,9 +28,7 @@ grammar CSS::Module::CSS3::Backgrounds_and_Borders:ver<20120724.000>
 }
 
 class CSS::Module::CSS3::Backgrounds_and_Borders::Actions
-    is CSS::Module::CSS3::_Base::Actions
-    is CSS::Module::CSS3::Backgrounds_and_Borders::Spec::Actions
-    does CSS::Module::CSS3::Backgrounds_and_Borders::Spec::Interface {
+    is CSS::Module::CSS3::Backgrounds_and_Borders::Spec::Actions {
 
     method image($/) { make $<uri>.ast }
     method bg-image($/) {  make $.list($/) }
