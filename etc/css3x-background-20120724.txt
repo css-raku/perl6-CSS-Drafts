@@ -1,13 +1,13 @@
 # http://www.w3.org/TR/2012/CR-css3-background-20120724/#property-index
 background	[ <bg-layer> , ]* <final-bg-layer>	see individual properties	all elements	no	see individual properties	visual
-background-attachment	<attachment> [ , <attachment> ]*	scroll	all elements	no	N/A	visual
-background-clip	<box> [ , <box> ]*	border-box	all elements	no	N/A	visual
+background-attachment	<attachment>#	scroll	all elements	no	N/A	visual
+background-clip	<box>#	border-box	all elements	no	N/A	visual
 background-color	<color>	transparent	all elements	no	N/A	visual
-background-image	<bg-image> [ , <bg-image> ]*	none	all elements	no	N/A	visual
-background-origin	<box> [ , <box> ]*	padding-box	all elements	no	N/A	visual
-background-position	<position> [ , <position> ]*	0% 0%	all elements	no	refer to size of background positioning area minus size of background image; see text	visual
-background-repeat	<repeat-style> [ , <repeat-style> ]*	repeat	all elements	no	N/A	visual
-background-size	<bg-size> [ , <bg-size> ]*	auto	all elements	no	see text	visual
+background-image	<bg-image>#	none	all elements	no	N/A	visual
+background-origin	<box>#	padding-box	all elements	no	N/A	visual
+background-position	<position>#	0% 0%	all elements	no	refer to size of background positioning area minus size of background image; see text	visual
+background-repeat	<repeat-style>#	repeat	all elements	no	N/A	visual
+background-size	<bg-size>#	auto	all elements	no	see text	visual
 border	<border-width> || <border-style> || <color>	See individual properties	all elements	no	N/A	visual
 border-color	<color>{1,4}	(see individual properties)	all elements	no	N/A	visual
 border-image	<‘border-image-source’> || <‘border-image-slice’> [ / <‘border-image-width’> | / <‘border-image-width’>? / <‘border-image-outset’> ]? || <‘border-image-repeat’>	See individual properties	See individual properties	no	N/A	visual
@@ -25,4 +25,4 @@ border-top-style, border-right-style, border-bottom-style, border-left-style	<bo
 border-top-width, border-right-width, border-bottom-width, border-left-width	<border-width>	medium	all elements	no	N/A	visual
 border-width	<border-width>{1,4}	(see individual properties)	all elements	no	see individual properties	visual
 box-decoration-break	slice | clone	slice	all elements	no	N/A	visual
-box-shadow	none | <shadow> [ , <shadow> ]*	none	all elements	no	N/A	visual
+box-shadow	none | <shadow>#	none	all elements	no	N/A	visual
