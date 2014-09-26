@@ -70,15 +70,15 @@ class CSS::Module::CSS3::Values_and_Units::Actions {
         }
     }
 
-    method _resolve-op-type:sym<+>($lhs,$rhs) {
+    multi method _resolve-op-type('+', $lhs, $rhs) {
         return $._coerce-types($lhs, $rhs);
     }
 
-    method _resolve-op-type:sym<->($lhs,$rhs) {
+    multi method _resolve-op-type('-', $lhs, $rhs) {
         return $._coerce-types($lhs, $rhs);
     }
 
-    method _resolve-op-type:sym<*>($lhs,$rhs) {
+    multi method _resolve-op-type('*', $lhs, $rhs) {
 
         my $l-int = $lhs eq 'integer';
         my $r-int = $rhs eq 'integer';
@@ -96,7 +96,7 @@ class CSS::Module::CSS3::Values_and_Units::Actions {
         }
     }
 
-    method _resolve-op-type:sym</>($lhs,$rhs) {
+    multi method _resolve-op-type('/', $lhs, $rhs) {
        die "lhs of '/' has type {$rhs} - expected number or integer"
            unless $rhs eq 'number' || $rhs eq 'integer';
         return 'number' if $lhs eq 'integer';
@@ -112,7 +112,7 @@ class CSS::Module::CSS3::Values_and_Units::Actions {
             my $op = $op-ast.value;
             my $rhs = $rhs-ast.value;
 
-            my $derived-type = self."_resolve-op-type:sym<$op>"($type, $rhs.type);
+            my $derived-type = $._resolve-op-type($op, $type, $rhs.type);
             $type = $derived-type;
             $lhs = $rhs;
         }
