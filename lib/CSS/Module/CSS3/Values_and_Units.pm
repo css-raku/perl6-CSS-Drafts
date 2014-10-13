@@ -4,8 +4,10 @@ use v6;
 # - reference: http://www.w3.org/TR/2013/CR-css3-values-20130404/
 #
 class CSS::Module::CSS3::Values_and_Units::Actions {...}
+use CSS::Module::CSS3::_Base;
 
-grammar CSS::Module::CSS3::Values_and_Units {
+grammar CSS::Module::CSS3::Values_and_Units
+    is CSS::Module::CSS3::_Base {
 
     # -- Units -- #
 
@@ -49,7 +51,8 @@ grammar CSS::Module::CSS3::Values_and_Units {
 
 };
 
-class CSS::Module::CSS3::Values_and_Units::Actions {
+class CSS::Module::CSS3::Values_and_Units::Actions
+    is CSS::Module::CSS3::_Base::Actions {
 
     method distance-units:sym<viewport>($/) { make $.token( (~$/).lc, :type<length> ) }
     method rel-font-units($/) { make $.token(   (~$/).lc, :type<length> ) }
