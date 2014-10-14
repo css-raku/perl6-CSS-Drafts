@@ -5,6 +5,7 @@ use JSON::Tiny;
 
 use CSS::Grammar::Test;
 use CSS::Drafts::CSS3;
+use CSS::Module::CSS21;
 
 my $css3x-actions = CSS::Drafts::CSS3::Actions.new;
 my $css21-actions = CSS::Module::CSS21::Actions.new;
@@ -21,12 +22,15 @@ for ( $fh.lines ) {
     my %test = %$_test;
     my $input = %test<input>;
 
+    my $css3 = %test<css3> // {};
+    my %css3_expected = (%test, %$css3);
+
     CSS::Grammar::Test::parse-tests(
 	CSS::Drafts::CSS3, $input,
 	:rule($rule),
 	:actions($css3x-actions),
 	:suite<css3x-backgrounds>,
-	:expected(%test) );
+	:expected(%css3_expected) );
 
     my $css21 = %test<css21> // {};
     my %css21_expected = (%test, %$css21);
@@ -35,7 +39,7 @@ for ( $fh.lines ) {
 	CSS::Module::CSS21, $input, 
 	:rule($rule),
 	:actions($css21-actions),
-	:suite<css21-imported>,
+	:suite<css21>,
 	:expected(%css21_expected) );
 }
 
