@@ -100,22 +100,24 @@ class CSS::Module::CSS3::Values_and_Units::Actions
     }
 
     multi method _resolve-op-type('/', $lhs, $rhs) {
-       die "lhs of '/' has type {$rhs} - expected number or integer"
+        die "lhs of '/' has type {$rhs} - expected number or integer"
            unless $rhs eq 'number' || $rhs eq 'integer';
         return 'number' if $lhs eq 'integer';
         return $lhs;
     }
 
-    method _resolve-expr-type($expr-ast) {
+    method _resolved-chained-expr($expr-ast) {
         my ($lhs-ast, @rhs) = @$expr-ast;
-        my $lhs = $lhs-ast.value;
+        my ($lhs) = $lhs-ast.values;
         my $type = $lhs.type;
 
         for @rhs -> $op-ast, $rhs-ast {
-            my $op = $op-ast.value;
-            my $rhs = $rhs-ast.value;
+            my ($op) = $op-ast.values;
+            my ($rhs) = $rhs-ast.values;
 
-            my $derived-type = $._resolve-op-type($op, $type, $rhs.type);
+            my $rhs-type = $rhs.type;
+
+            my $derived-type = $._resolve-op-type($op, $type, $rhs-type);
             $type = $derived-type;
             $lhs = $rhs;
         }
@@ -124,13 +126,13 @@ class CSS::Module::CSS3::Values_and_Units::Actions
 
     method sum ($/) {
         my $expr = $.list($/, :capture<op>);
-        my $type = $._resolve-expr-type($expr);
+        my $type = $._resolved-chained-expr($expr);
         make $.token( $expr, :type($type));
     }
 
     method product ($/) {
         my $expr = $.list($/, :capture<op>);
-        my $type = $._resolve-expr-type($expr);
+        my $type = $._resolved-chained-expr($expr);
         make $.token( $expr, :type($type));
     }
 
@@ -171,7 +173,12 @@ class CSS::Module::CSS3::Values_and_Units::Actions
         $type //= 'string';
         make $.token( $expr, :type($type));
     }
-    method unit($/)      { make $.token( $.node($/), :type($/.caps[0].value.ast.type)) }
+    method unit($/) {
+        my $item = $/.caps[0].value.ast;
+        my $type = $item.type
+            // ($item.units eq '%' && 'percentage');
+        make $.token( $.node($/), :type($type) );
+    }
     method type($/)      { make $<keyw>.ast }
     method unit-name($/) { make $<units>.ast }
 
