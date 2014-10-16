@@ -25,8 +25,8 @@ grammar CSS::Module::CSS3::Values_and_Units
     rule math      {:i 'calc(' <calc=.sum> ')' }
     rule sum       { <product> *% [<.ws>$<op>=['+'|'-']<.ws>] } 
     rule product   { <unit> [ $<op>='*' <unit> | $<op>='/' [<integer> | <number>] ]* }
-    rule attr-expr {:i 'attr(' <attr-name=.qname> [<type>|<unit-name>]? [ ',' [ <unit> | <calc> ] ]? ')' }
-    rule unit      { <integer> | <number> | <dimension> | <percentage> | '(' <sum> ')' | <calc> | <attr-expr> }
+    rule attr-expr {:i 'attr(' <attr-name=.qname> [<type>|<unit-name>]? [ ',' [ <unit> | <calc=.math> ] ]? ')' }
+    rule unit      { <integer> | <number> | <dimension> | <percentage> | '(' <sum> ')' | <calc=.math> | <attr-expr> }
 
     token unit-name {<units=.angle-units>|<units=.distance-units>|<units=.rel-font-units>|<units=.resolution-units>}
 
@@ -41,9 +41,10 @@ grammar CSS::Module::CSS3::Values_and_Units
 
     # override property val rule to enable funky property handling,
     # i.e. expression toggling attributes
-    rule toggle($expr) {:i 'toggle(' [ <proforma> | $<expr>=$expr:i ] +% [ ',' ] ')' }
-    rule attr($expr)   {:i 'attr(' <attr-name=.qname> [<type>|<unit-name>]? [ ',' $<fallback>=$expr:i ]? ')' }
-    rule val($expr)    {:i <proforma> | <toggle($expr)> | <attr($expr)> | $<expr>=$expr:i || <any-arg>* } 
+    rule toggle($expr) {:i 'toggle(' [ <proforma> | $<expr>=$expr ] +% [ ',' ] ')' }
+    rule attr($expr)   {:i 'attr(' <attr-name=.qname> [<type>|<unit-name>]? [ ',' $<fallback>=$expr ]? ')' }
+    rule proforma:sym<toggle> { <toggle($*EXPR)> }
+    rule proforma:sym<attr>   { <attr($*EXPR)> }
 
     #
     # extend core grammar
@@ -142,14 +143,13 @@ class CSS::Module::CSS3::Values_and_Units::Actions
             my ($_name, $match) = $_.kv;
 
             $match<ref> ?? $match<ref>.ast !! $match.ast;
-
         });
 
         make @expr;
     }
 
     method attr($/) {
-        my %ast = $.node($/);
+        my %ast = %( $.node($/) );
 
         my $fallback = $<fallback>;
         # auto-dereference <expr>
@@ -165,6 +165,9 @@ class CSS::Module::CSS3::Values_and_Units::Actions
 
         make $.token( %ast, :type($type));
     }
+
+    method proforma:sym<toggle>($/) { make $.node($/) }
+    method proforma:sym<attr>($/) { make $.node($/) }
 
     method attr-expr($/) {
         my $expr = $.list($/);
