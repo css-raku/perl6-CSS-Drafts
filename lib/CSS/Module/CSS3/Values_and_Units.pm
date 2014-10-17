@@ -41,8 +41,8 @@ grammar CSS::Module::CSS3::Values_and_Units
 
     # override property val rule to enable funky property handling,
     # i.e. expression toggling attributes
-    rule toggle($expr) {:i 'toggle(' [ <proforma> | $<expr>=$expr ] +% [ ',' ] ')' }
-    rule attr($expr)   {:i 'attr(' <attr-name=.qname> [<type>|<unit-name>]? [ ',' $<fallback>=$expr ]? ')' }
+    rule toggle($expr) {:i 'toggle(' <val($*EXPR)> +% [ ',' ] ')' }
+    rule attr($expr)   {:i 'attr(' <attr-name=.qname> [<type>|<unit-name>]? [ ',' <fallback=.val($*EXPR)> ]? ')' }
     rule proforma:sym<toggle> { <toggle($*EXPR)> }
     rule proforma:sym<attr>   { <attr($*EXPR)> }
 
@@ -138,26 +138,12 @@ class CSS::Module::CSS3::Values_and_Units::Actions
     }
 
     method toggle($/) { 
-
-        my @expr = $/.caps.map({
-            my ($_name, $match) = $_.kv;
-
-            $match<ref> ?? $match<ref>.ast !! $match.ast;
-        });
-
+        my @expr = $<val>>>.ast;
         make @expr;
     }
 
     method attr($/) {
         my %ast = %( $.node($/) );
-
-        my $fallback = $<fallback>;
-        # auto-dereference <expr>
-        $fallback = $fallback<ref>
-            while $fallback && $fallback<ref>;
-        
-        %ast<fallback> = $.list($<fallback>)
-            if $<fallback>;
 
         my $type = $<type> && $<type>.ast;
         $type //= $<unit-name> && $<unit-name>.ast.type;
