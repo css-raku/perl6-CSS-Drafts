@@ -56,9 +56,9 @@ class CSS::Module::CSS3::Values_and_Units::Actions
     is CSS::Module::CSS3::_Base::Actions {
 
     method distance-units:sym<viewport>($/) { make $.token( (~$/).lc, :type<length> ) }
-    method rel-font-units($/) { make $.token(   (~$/).lc, :type<length> ) }
-    method angle-units($/) { make $.token(      (~$/).lc, :type<angle> ) }
-    method resolution-units($/) { make $.token( (~$/).lc, :type<resolution> ) }
+    method rel-font-units($/)               { make $.token( (~$/).lc, :type<length> ) }
+    method angle-units($/)                  { make $.token( (~$/).lc, :type<angle> ) }
+    method resolution-units($/)             { make $.token( (~$/).lc, :type<resolution> ) }
 
     method math($/) { make $.token( $.node($/), :type( $<calc>.ast.type )) }
 
@@ -146,7 +146,7 @@ class CSS::Module::CSS3::Values_and_Units::Actions
         my %ast = %( $.node($/) );
 
         my $type = $<type> && $<type>.ast;
-        $type //= $<unit-name> && $<unit-name>.ast.type;
+        $type //= $<unit-name> && lc $<unit-name>;
         $type //= 'string';
 
         make $.token( %ast, :type($type));
