@@ -15,15 +15,14 @@ for ( $fh.lines ) {
 ##        note '[' ~ .substr(2) ~ ']';
         next;
     }
-    my ($rule, $_test) = @( from-json($_) );
-    my %test = %$_test;
-    my $input = %test<input>;
+    my ($rule, $_expected) = @( from-json($_) );
+    my %expected = %$_expected;
+    my $input = %expected<input>;
 
     CSS::Grammar::Test::parse-tests(
-        CSS::Drafts::CSS3, $input, :rule($rule),
-        :actions($actions),
+        CSS::Drafts::CSS3, $input, :$rule, :$actions,
         :suite<css3x-units>,
-        :expected(%test) );
+        :expected(%expected) );
 }
 
 done;
