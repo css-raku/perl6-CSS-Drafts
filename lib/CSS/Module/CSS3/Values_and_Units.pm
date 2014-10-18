@@ -41,8 +41,9 @@ grammar CSS::Module::CSS3::Values_and_Units
 
     # override property val rule to enable funky property handling,
     # i.e. expression toggling attributes
-    rule toggle($expr) {:i 'toggle(' <val($*EXPR)> +% [ ',' ] ')' }
-    rule attr($expr)   {:i 'attr(' <attr-name=.qname> [<type>|<unit-name>]? [ ',' <fallback=.val($*EXPR)> ]? ')' }
+    rule toggle-val    {<val($*EXPR)>}
+    rule toggle($expr) {:i 'toggle(' <toggle-val> +% [ ',' ] ')' }
+    rule attr($expr)   {:i 'attr(' <attr-name=.qname> [<type>|<unit-name>]? [ ',' <val($*EXPR)> ]? ')' }
     rule proforma:sym<toggle> { <toggle($*EXPR)> }
     rule proforma:sym<attr>   { <attr($*EXPR)> }
 
@@ -137,13 +138,21 @@ class CSS::Module::CSS3::Values_and_Units::Actions
         make $.token( $expr, :type($type));
     }
 
+    method toggle-val($/) {
+        my $decl = $.decl( $/ );
+        make $decl<expr>;
+    }
+
     method toggle($/) { 
-        my @expr = $<val>>>.ast;
-        make @expr;
+        make [ $<toggle-val>>>.ast ];
     }
 
     method attr($/) {
         my %ast = %( $.node($/) );
+        if $<val> {
+            %ast<val>:delete;
+            %ast<fallback> = $.decl( $/ )<expr>;
+        }
 
         my $type = $<type> && $<type>.ast;
         $type //= $<unit-name> && lc $<unit-name>;
