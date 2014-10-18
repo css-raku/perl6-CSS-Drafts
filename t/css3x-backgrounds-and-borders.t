@@ -18,26 +18,24 @@ for ( $fh.lines ) {
 ##        note '[' ~ .substr(2) ~ ']';
         next;
     }
-    my ($rule, $_test) = @( from-json($_) );
-    my %test = %$_test;
-    my $input = %test<input>;
+    my ($rule, $_expected) = @( from-json($_) );
+    my %expected = %$_expected;
+    my $input = %expected<input>;
 
-    my $css3 = %test<css3> // {};
-    my %css3_expected = (%test, %$css3);
+    my $css3 = %expected<css3> // {};
+    my %css3_expected = (%expected, %$css3);
 
     CSS::Grammar::Test::parse-tests(
-	CSS::Drafts::CSS3, $input,
-	:rule($rule),
+	CSS::Drafts::CSS3, $input, :$rule,
 	:actions($css3x-actions),
 	:suite<css3x-backgrounds>,
 	:expected(%css3_expected) );
 
-    my $css21 = %test<css21> // {};
-    my %css21_expected = (%test, %$css21);
+    my $css21 = %expected<css21> // {};
+    my %css21_expected = (%expected, %$css21);
 
     CSS::Grammar::Test::parse-tests(
-	CSS::Module::CSS21, $input, 
-	:rule($rule),
+	CSS::Module::CSS21, $input, :$rule,
 	:actions($css21-actions),
 	:suite<css21>,
 	:expected(%css21_expected) );
