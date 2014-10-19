@@ -41,11 +41,11 @@ grammar CSS::Module::CSS3::Values_and_Units
 
     # override property val rule to enable funky property handling,
     # i.e. expression toggling attributes
-    rule toggle-val    {<val($*EXPR)>}
-    rule toggle($expr) {:i 'toggle(' <toggle-val> +% [ ',' ] ')' }
-    rule attr($expr)   {:i 'attr(' <attr-name=.qname> [<type>|<unit-name>]? [ ',' <val($*EXPR)> ]? ')' }
-    rule proforma:sym<toggle> { <toggle($*EXPR)> }
-    rule proforma:sym<attr>   { <attr($*EXPR)> }
+    rule toggle-val {<val($*EXPR, $*USAGE)>}
+    rule toggle     {:i 'toggle(' <toggle-val> +% [ ',' ] ')' }
+    rule attr       {:i 'attr(' <attr-name=.qname> [<type>|<unit-name>]? [ ',' <val($*EXPR, $*USAGE)> ]? ')' }
+    rule proforma:sym<toggle> { <toggle> }
+    rule proforma:sym<attr>   { <attr> }
 
     #
     # extend core grammar
@@ -144,7 +144,9 @@ class CSS::Module::CSS3::Values_and_Units::Actions
     }
 
     method toggle($/) { 
-        make [ $<toggle-val>>>.ast ];
+        my $vals = [ $<toggle-val>>>.ast ];
+        return Any if $vals.grep: {! .defined};
+        make $vals;
     }
 
     method attr($/) {
