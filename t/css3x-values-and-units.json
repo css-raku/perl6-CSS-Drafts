@@ -10,7 +10,10 @@
 [ "declaration", { "input" : "elevation: toggle(initial, below, above)", "ast" : { "property" : "elevation", "expr" : [ { "toggle" : [ [ { "initial" : true } ], [ { "direction" : "below" } ], [ { "direction" : "above" } ] ] } ] } } ]
 [ "declaration", { "input" : "elevation: toggle(initial, junk, above)", "ast" : null, "warnings" : "usage elevation: <angle> | below | level | above | higher | lower | inherit | initial dropping declaration: elevation" } ]
 [ "declaration", { "input" : "play-during: toggle( url('music.wav') repeat, auto)", "ast" : { "property" : "play-during", "expr" : [ { "toggle" : [ [ { "uri" : "music.wav" }, { "keyw" : "repeat" } ], [ { "keyw" : "auto" } ] ] } ] } } ]
-[ "declaration", { "input" : "elevation: attr(auto deg, below)", "ast" : { "property" : "elevation", "expr" : [ { "attr" : { "attr-name" : { "element-name" : "auto" }, "unit-name" : "deg", "fallback" : [ { "direction" : "below" } ] } } ] } } ]
+// From http://www.w3.org/TR/css3-values/#toggle-notation:
+// "Note that because toggled values are separated by commas, they cannot themselves include top-level commas."
+[ "declaration", { "input" : "font-family: toggle( 'Gill Sans', Futura, sans-serif )", "todo" : { "ast" : "property-level commas vs toggle arguments" }, "ast" : { "property" : "font-family", "expr" : [ { "toggle" : [ [ { "family-name" : "Gill Sans" } ], [ { "family-name" : "Futura" } ], [ { "generic-family" : "sans-serif" } ] ] } ] } } ]
+[ "declaration", { "input" : "elevation: attr(auto deg, below)" , "ast" : { "property" : "elevation", "expr" : [ { "attr" : { "attr-name" : { "element-name" : "auto" }, "unit-name" : "deg", "fallback" : [ { "direction" : "below" } ] } } ] } } ]
 [ "declaration", { "input" : "width: attr(size px, auto)", "ast" : { "property" : "width", "expr" : [ { "attr" : { "attr-name" : { "element-name" : "size" }, "unit-name" : "px", "fallback" : [ { "keyw" : "auto" } ] } } ] } } ]
 [ "declaration", { "input" : "pause: attr(delay time, 30ms 40ms)", "ast" : { "property" : "pause", "expr" : [ { "attr" : { "attr-name" : { "element-name" : "delay" }, "type" : "time", "fallback" : [ { "time" : 30 }, { "time" : 40 } ] } } ] } } ]
 [ "declaration", { "input" : "pause: attr(delay WTF, 30ms 40ms)", "ast" : null, "warnings" : "usage pause: [ [<time> | <percentage>]{1,2} ] | inherit | initial" } ]
