@@ -23,7 +23,7 @@ grammar CSS::Module::CSS3::Values_and_Units
     # -- Math -- #
 
     rule math      {:i 'calc(' <calc=.sum> ')' }
-    rule sum       { <product> *% [<.ws>$<op>=['+'|'-']<.ws>] } 
+    rule sum       { <product> *% [<.ws>$<op>=< + - ><.ws>] } 
     rule product   { <unit> [ $<op>='*' <unit> | $<op>='/' [<integer> | <number>] ]* }
     rule attr-expr {:i 'attr(' <attr-name=.qname> [<type>|<unit-name>]? [ ',' [ <unit> | <calc=.math> ] ]? ')' }
     rule unit      { <integer> | <number> | <dimension> | <percentage> | '(' <sum> ')' | <calc=.math> | <attr-expr> }
@@ -32,25 +32,20 @@ grammar CSS::Module::CSS3::Values_and_Units
 
     token type {:i [string|color|url|integer|number|length|angle|time|frequency] & <keyw> }
 
-    # extend language grammars
+    # extend module grammars
     rule length:sym<math>     {<math>}
     rule frequency:sym<math>  {<math>}
     rule angle:sym<math>      {<math>}
     rule time:sym<math>       {<math>}
     rule resolution:sym<math> {<math>}
 
-    # override property val rule to enable funky property handling,
-    # i.e. expression toggling attributes
+    # implement proforma rules for attr() and toggle()
+    # - see <val> rule in CSS::Specification::_Base.
     rule toggle-val {<val($*EXPR, $*USAGE)>}
     rule toggle     {:i 'toggle(' <toggle-val> +% [ ',' ] ')' }
     rule attr       {:i 'attr(' <attr-name=.qname> [<type>|<unit-name>]? [ ',' <val($*EXPR, $*USAGE)> ]? ')' }
     rule proforma:sym<toggle> { <toggle> }
     rule proforma:sym<attr>   { <attr> }
-
-    #
-    # extend core grammar
-    rule term:sym<math>       {<math>}
-
 };
 
 class CSS::Module::CSS3::Values_and_Units::Actions
