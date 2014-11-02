@@ -4,16 +4,16 @@ use v6;
 # - reference: http://www.w3.org/TR/2013/CR-css3-values-20130404/
 #
 class CSS::Module::CSS3::Values_and_Units::Actions {...}
-use CSS::Module::CSS3::_Base;
 use CSS::Grammar::AST :CSSValue;
+use CSS::Module::CSS3::_Base;
 
 grammar CSS::Module::CSS3::Values_and_Units
     is CSS::Module::CSS3::_Base {
 
     # -- Units -- #
 
-    # add viewport as a new type of distance-units
-    token distance-units:sym<viewport> {:i vw|vh|vmin|vmax}
+    # add viewport as a new type of length-units
+    token length-units:sym<viewport> {:i vw|vh|vmin|vmax}
 
     # override/extend css::grammar <rel-font-units> & <angle-units>
     token rel-font-units   {:i[em|ex|ch|rem]}
@@ -29,7 +29,7 @@ grammar CSS::Module::CSS3::Values_and_Units
     rule attr-expr {:i 'attr(' <attr-name=.qname> [<type>|<unit-name>]? [ ',' [ <unit> | <calc=.math> ] ]? ')' }
     rule unit      { <integer> | <number> | <dimension> | <percentage> | '(' <sum> ')' | <calc=.math> | <attr-expr> }
 
-    token unit-name {<units=.angle-units>|<units=.distance-units>|<units=.rel-font-units>|<units=.resolution-units>}
+    token unit-name {<units=.angle-units>|<units=.length-units>|<units=.rel-font-units>|<units=.resolution-units>}
 
     token type {:i [string|color|url|integer|number|length|angle|time|frequency] & <keyw> }
 
@@ -52,10 +52,10 @@ grammar CSS::Module::CSS3::Values_and_Units
 class CSS::Module::CSS3::Values_and_Units::Actions
     is CSS::Module::CSS3::_Base::Actions {
 
-    method distance-units:sym<viewport>($/) { make $.token( $/.lc, :type(CSSValue::LengthComponent) ) }
-    method rel-font-units($/)               { make $.token( $/.lc, :type(CSSValue::LengthComponent) ) }
-    method angle-units($/)                  { make $.token( $/.lc, :type(CSSValue::AngleComponent) ) }
-    method resolution-units($/)             { make $.token( $/.lc, :type(CSSValue::ResolutionComponent) ) }
+    method length-units:sym<viewport>($/) { make $.token( $/.lc, :type(CSSValue::LengthComponent) ) }
+    method rel-font-units($/)             { make $.token( $/.lc, :type(CSSValue::LengthComponent) ) }
+    method angle-units($/)                { make $.token( $/.lc, :type(CSSValue::AngleComponent) ) }
+    method resolution-units($/)           { make $.token( $/.lc, :type(CSSValue::ResolutionComponent) ) }
 
     method math($/) { make $.token( $.node($/), :type( $<calc>.ast.type )) }
 
@@ -156,10 +156,10 @@ class CSS::Module::CSS3::Values_and_Units::Actions
         }
 
         my $type = $<type> && $<type>.ast;
-        $type //= $<unit-name> && lc $<unit-name>;
         $type //= CSSValue::StringComponent;
+        my $units = $<unit-name> && lc $<unit-name>;
 
-        make $.token( %ast, :type($type));
+        make $.token( %ast, :$type, :$units);
     }
 
     method proforma:sym<toggle>($/) { make $.node($/) }
@@ -167,9 +167,21 @@ class CSS::Module::CSS3::Values_and_Units::Actions
 
     method attr-expr($/) {
         my $expr = $.list($/);
-        my $type = $<type> && $<type>.ast;
-        $type //= $<unit-name> && $<unit-name>.ast.type;
-        $type //= CSSValue::StringComponent;
+        my $type;
+        my $units;
+
+        if $<type> {
+            $type = $<type>.ast;
+        }
+        elsif $<unit-name> {
+            $units = $<unit-name>.lc;
+            $type = CSS::Grammar::AST::CSSUnits.enums{ $units }
+                or die "unknown unit: $units";
+        }
+        else {
+            $type = CSSValue::StringComponent;
+        }
+
         make $.token( $expr, :type($type));
     }
     method unit($/) {
