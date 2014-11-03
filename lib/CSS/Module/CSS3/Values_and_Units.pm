@@ -156,8 +156,13 @@ class CSS::Module::CSS3::Values_and_Units::Actions
         }
 
         my $type = $<type> && $<type>.ast;
-        $type //= CSSValue::StringComponent;
-        my $units = $<unit-name> && lc $<unit-name>;
+        my $units;
+        if $<unit-name> {
+            $units = $<unit-name> && lc $<unit-name>;
+        }
+        else {
+            $type //= CSSValue::StringComponent;
+        }
 
         make $.token( %ast, :$type, :$units);
     }
