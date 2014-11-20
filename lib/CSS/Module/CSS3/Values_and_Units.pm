@@ -4,7 +4,7 @@ use v6;
 # - reference: http://www.w3.org/TR/2013/CR-css3-values-20130404/
 #
 class CSS::Module::CSS3::Values_and_Units::Actions {...}
-use CSS::Grammar::AST :CSSValue;
+use CSS::AST :CSSValue;
 use CSS::Module::CSS3::_Base;
 
 grammar CSS::Module::CSS3::Values_and_Units
@@ -180,7 +180,7 @@ class CSS::Module::CSS3::Values_and_Units::Actions
         }
         elsif $<unit-name> {
             $units = $<unit-name>.lc;
-            $type = CSS::Grammar::AST::CSSUnits.enums{ $units }
+            $type = CSS::AST::CSSUnits.enums{ $units }
                 or die "unknown unit: $units";
         }
         else {
