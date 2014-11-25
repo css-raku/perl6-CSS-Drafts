@@ -19,7 +19,9 @@ grammar CSS::Module::CSS3::Backgrounds_and_Borders:ver<20120724.000>
     rule image      { <uri> }
     rule bg-layer($final?) { [:my @*SEEN; <bg-image=.expr-background-image> <!seen(0)> | <position> [ '/' <bg-size=.expr-background-size> ]? <!seen(1)> | <repeat-style=.expr-background-repeat> <!seen(2)> | <attachment> <!seen(3)> | <box=.expr-background-clip>**1..2 <!seen(4)> | <color> <!seen(5)> <?{$final}> ]+}
     rule final-bg-layer{ <bg-layer(True)> }
-    rule position   {:i [ <percentage> | <length> | [ [ left | center | right | top | bottom ] & <keyw> ] [ <percentage> | <length> ] ? ] ** 1..2 }
+    # work around for RT#117955
+##    rule position   {:i [ <percentage> | <length> | [ [ left | center | right | top | bottom ] & <keyw> ] [ <percentage> | <length> ] ? ] ** 1..2 }
+    rule position   {:i [ <percentage> | <length> | <keyw( rx:i[ left | center | right | top | bottom ] )> [ <percentage> | <length> ] ? ] ** 1..2 }
     rule shadow     {:i [ <length> | <color> | inset & <keyw> ]+ }
     rule attachment {:i [ scroll | fixed | local ] & <keyw> }
     rule box        {:i [ border\-box | padding\-box | content\-box ] & <keyw> }
