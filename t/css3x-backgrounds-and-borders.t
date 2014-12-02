@@ -26,7 +26,7 @@ for 't/css3x-backgrounds-and-borders.json'.IO.lines {
     CSS::Grammar::Test::parse-tests(
 	CSS::Drafts::CSS3, $input, :$rule,
 	:actions($css3x-actions),
-	:suite<css3x-backgrounds>,
+	:suite<css3x>,
         :$writer,
 	:expected(%css3_expected) );
 

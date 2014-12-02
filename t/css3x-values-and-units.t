@@ -9,10 +9,9 @@ my $actions = CSS::Drafts::CSS3::Actions.new;
 
 for 't/css3x-values-and-units.json'.IO.lines {
 
-    if .substr(0,2) eq '//' {
-##        note '[' ~ .substr(2) ~ ']';
-        next;
-    }
+    next
+        if .substr(0,2) eq '//';
+
     my ($rule, $expected) = @( from-json($_) );
     my $input = $expected<input>;
 
