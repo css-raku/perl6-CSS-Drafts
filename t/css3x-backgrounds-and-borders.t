@@ -6,16 +6,17 @@ use JSON::Tiny;
 use CSS::Grammar::Test;
 use CSS::Drafts::CSS3;
 use CSS::Module::CSS21;
+use CSS::Writer;
 
 my $css3x-actions = CSS::Drafts::CSS3::Actions.new;
 my $css21-actions = CSS::Module::CSS21::Actions.new;
+my $writer = CSS::Writer.new;
 
 for 't/css3x-backgrounds-and-borders.json'.IO.lines {
 
-    if .substr(0,2) eq '//' {
-##        note '[' ~ .substr(2) ~ ']';
-        next;
-    }
+    next
+        if .substr(0,2) eq '//';
+
     my ($rule, $expected) = @( from-json($_) );
     my $input = $expected<input>;
 
@@ -25,7 +26,8 @@ for 't/css3x-backgrounds-and-borders.json'.IO.lines {
     CSS::Grammar::Test::parse-tests(
 	CSS::Drafts::CSS3, $input, :$rule,
 	:actions($css3x-actions),
-	:suite<css3x-backgrounds>,
+	:suite<css3x>,
+        :$writer,
 	:expected(%css3_expected) );
 
     my $css21 = $expected<css21> // {};
@@ -35,6 +37,7 @@ for 't/css3x-backgrounds-and-borders.json'.IO.lines {
 	CSS::Module::CSS21, $input, :$rule,
 	:actions($css21-actions),
 	:suite<css21>,
+        :$writer,
 	:expected(%css21_expected) );
 }
 
