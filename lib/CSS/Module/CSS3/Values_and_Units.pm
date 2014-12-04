@@ -23,10 +23,10 @@ grammar CSS::Module::CSS3::Values_and_Units
 
     # -- Math -- #
 
-    rule math      {:i 'calc(' <calc=.sum> ')' }
-    rule sum       { <product> *% [<.ws>$<op>=< + - ><.ws>] } 
-    rule product   { <unit> [ $<op>='*' <unit> | $<op>='/' [<integer> | <number>] ]* }
-    rule attr-expr {:i 'attr(' <attr-name=.qname> [<type>|<unit-name>]? [ ',' [ <unit> | <calc=.math> ] ]? ')' }
+    rule math      {:i 'calc(' <sum> ')' }
+    rule sum       { <product> *% [ <op(rx/< + - >/)> ] } 
+    rule product   { <unit> [ <op('*')> <unit> | <op('/')> [<integer> | <number>] ]* }
+    rule attr-expr {:i 'attr(' <qname> [[<.type>|<.unit-name>] && <keyw>]? [ ',' [ <unit> | <calc=.math> ] ]? ')' }
     rule unit      { <integer> | <number> | <dimension> | <percentage> | '(' <sum> ')' | <calc=.math> | <attr-expr> }
 
     token unit-name {<units=.angle-units>|<units=.length-units>|<units=.rel-font-units>|<units=.resolution-units>}
@@ -42,9 +42,9 @@ grammar CSS::Module::CSS3::Values_and_Units
 
     # implement proforma rules for attr() and toggle()
     # - see <val> rule in CSS::Specification::_Base.
-    rule toggle-val { <val($*EXPR, $*USAGE)> }
-    rule toggle     {:i 'toggle(' <toggle-val> +% ',' ')' }
-    rule attr       {:i 'attr(' <attr-name=.qname> [<type>|<unit-name>]? [ ',' <val($*EXPR, $*USAGE)> ]? ')' }
+    rule toggle-arg { <val($*EXPR, $*USAGE)> }
+    rule toggle     {:i 'toggle(' <expr=.toggle-arg> +% ',' ')' }
+    rule attr       {:i 'attr(' <qname> [[<.type>|<.unit-name>] && <keyw>]? [ <op(',')> <val($*EXPR, $*USAGE)> ]? ')' }
     rule proforma:sym<toggle> { <toggle> }
     rule proforma:sym<attr>   { <attr> }
 };
@@ -52,12 +52,12 @@ grammar CSS::Module::CSS3::Values_and_Units
 class CSS::Module::CSS3::Values_and_Units::Actions
     is CSS::Module::CSS3::_Base::Actions {
 
-    method length-units:sym<viewport>($/) { make $.token( $/.lc, :type(CSSValue::LengthComponent) ) }
-    method rel-font-units($/)             { make $.token( $/.lc, :type(CSSValue::LengthComponent) ) }
-    method angle-units($/)                { make $.token( $/.lc, :type(CSSValue::AngleComponent) ) }
-    method resolution-units($/)           { make $.token( $/.lc, :type(CSSValue::ResolutionComponent) ) }
+    method length-units:sym<viewport>($/) { make $/.lc }
+    method rel-font-units($/)             { make $/.lc }
+    method angle-units($/)                { make $/.lc }
+    method resolution-units($/)           { make $/.lc }
 
-    method math($/) { make $.token( $.node($/), :type( $<calc>.ast.type )) }
+    method math($/) { make $.func( 'calc', $<sum>.ast, :trait( $<sum>.ast.trait ), :arg-type<expr>) }
 
     method _coerce-types($lhs, $rhs) {
         return do {
@@ -70,15 +70,15 @@ class CSS::Module::CSS3::Values_and_Units::Actions
         }
     }
 
-    multi method _resolve-op-type('+', $lhs, $rhs) {
+    multi method _cast-operands('+', $lhs, $rhs) {
         return $._coerce-types($lhs, $rhs);
     }
 
-    multi method _resolve-op-type('-', $lhs, $rhs) {
+    multi method _cast-operands('-', $lhs, $rhs) {
         return $._coerce-types($lhs, $rhs);
     }
 
-    multi method _resolve-op-type('*', $lhs, $rhs) {
+    multi method _cast-operands('*', $lhs, $rhs) {
 
         my $Int = CSSValue::IntegerComponent;
         my $Num = CSSValue::NumberComponent;
@@ -87,140 +87,112 @@ class CSS::Module::CSS3::Values_and_Units::Actions
         my $r-int = $rhs eq $Int;
 
         return do {
-           when $l-int && $r-int {$Int}
+            when $l-int && $r-int {$Int}
 
-           my $l-num = $l-int || $lhs eq $Num;
-           my $r-num = $r-int || $rhs eq $Num;
+            my $l-num = $l-int || $lhs eq $Num;
+            my $r-num = $r-int || $rhs eq $Num;
 
-           when $l-num && $r-num {$Num}
-           when $r-num           {$lhs}
-           when $l-num           {$rhs}
-           default               {Any}
+            when $l-num && $r-num {$Num}
+            when $r-num           {$lhs}
+            when $l-num           {$rhs}
+            default               {Any}
         }
     }
 
-    multi method _resolve-op-type('/', $lhs, $rhs) {
+    multi method _cast-operands('/', $lhs, $rhs) {
         die "lhs of '/' has type {$rhs} - expected number or integer"
-           unless $rhs eq CSSValue::NumberComponent | CSSValue::IntegerComponent;
+            unless $rhs eq CSSValue::NumberComponent | CSSValue::IntegerComponent;
         return CSSValue::NumberComponent
             if $lhs eq CSSValue::IntegerComponent;
         return $lhs;
     }
 
-    method _resolved-chained-expr($expr-ast) {
+    method _cast-chained-expr($expr-ast) {
         my ($lhs-ast, @rhs) = @$expr-ast;
         my ($lhs) = $lhs-ast.values;
-        my $type = $lhs.type;
+        my $cast = $lhs.trait // $lhs.type;
 
         for @rhs -> $op-ast, $rhs-ast {
             my ($op) = $op-ast.values;
             my ($rhs) = $rhs-ast.values;
 
-            my $rhs-type = $rhs.type;
+            my $rhs-type = $rhs.trait// $rhs.type;
 
-            my $derived-type = $._resolve-op-type($op, $type, $rhs-type);
-            $type = $derived-type;
+            $cast = $._cast-operands($op, $cast, $rhs-type);
             $lhs = $rhs;
         }
-        return $type;
+        return $cast;
     }
 
     method sum ($/) {
-        my $expr = $.list($/, :capture<op>);
-        my $type = $._resolved-chained-expr($expr);
-        make $.token( $expr, :type($type));
+        my $expr = $.list($/);
+        my $cast = $._cast-chained-expr($expr);
+        make $.token( $expr, :type<expr>, :trait($cast) );
     }
 
-    method product ($/) {
-        my $expr = $.list($/, :capture<op>);
-        my $type = $._resolved-chained-expr($expr);
-        make $.token( $expr, :type($type));
+    method product($/) {
+        my $expr = $.list($/);
+        my $cast = $._cast-chained-expr($expr);
+        make $.token( $expr, :type<expr>, :trait($cast) );
     }
 
-    method toggle-val($/) {
+    method toggle-arg($/) {
         my $decl = $.decl( $/ );
         make $decl<expr>;
     }
 
     method toggle($/) { 
-        my $vals = [ $<toggle-val>>>.ast ];
-        return Any if $vals.grep: {! .defined};
-        make $vals;
+        return Any if $<expr>>>.ast.grep: {! .defined};
+        my $vals = $.list( $/ );
+        make $.func('toggle', $vals);
     }
 
     method attr($/) {
-        my %ast = %( $.node($/) );
+        my @ast = @( $.list($/) );
         if $<val> {
-            %ast<val>:delete;
-            %ast<fallback> = $.decl( $/ )<expr>;
+            @ast[*-1] = {'expr:fallback' => $.decl( $/ )<expr>};
         }
 
-        my $type = $<type> && $<type>.ast;
-        my $units;
-        if $<unit-name> {
-            $units = $<unit-name> && lc $<unit-name>;
-        }
-        else {
-            $type //= CSSValue::StringComponent;
-        }
-
-        make $.token( %ast, :$type, :$units);
+        make $.func( 'attr', @ast, :arg-type<expr> );
     }
 
     method proforma:sym<toggle>($/) { make $.node($/) }
     method proforma:sym<attr>($/)   { make $.node($/) }
 
     method attr-expr($/) {
-        my $expr = $.list($/);
-        my $type;
-        my $units;
-
-        if $<type> {
-            $type = $<type>.ast;
-        }
-        elsif $<unit-name> {
-            $units = $<unit-name>.lc;
-            $type = CSS::AST::CSSUnits.enums{ $units }
-                or die "unknown unit: $units";
-        }
-        else {
-            $type = CSSValue::StringComponent;
-        }
-
-        make $.token( $expr, :type($type));
+        make $.func( 'attr', $.list($/) );
     }
+
     method unit($/) {
         my $item = $/.caps[0].value.ast;
-        my $type = $item.type
+        my $cast = $item.trait // $item.type
             // ($item.units eq '%' && CSSValue::PercentageComponent);
-        make $.token( $.node($/), :type($type) );
+        make $.token( $item, :type($cast), :trait($cast) );
     }
-    method type($/)      { make $<keyw>.ast }
-    method unit-name($/) { make $<units>.ast }
 
-    method _type-check-expr($expr, $base-type) {
+    method _cast-expr($expr, $base-type) {
         my $expr-ast = $expr.ast;
 
-        my $expr-type = $expr-ast.type;
+        my $expr-type = $expr-ast.trait;
         unless $expr-type.defined {
             $.warning("incompatible types in expression", ~$/);
             return Any;
         }
 
-        my $type = $._coerce-types($base-type, $expr-type);
-        unless $type.defined {
+        my $cast = $._coerce-types($base-type, $expr-type);
+        unless $cast.defined {
             $.warning("expected an expresssion of type {$base-type}, got: {$expr-type}", ~$expr);
             return Any;
         }
 
-        $expr-ast.type = $type;
+        $expr-ast.trait = $cast;
         return $expr-ast;
     }
 
-    method length:sym<math>($/)     { make $._type-check-expr($<math>, CSSValue::LengthComponent); }
-    method frequency:sym<math>($/)  { make $._type-check-expr($<math>, CSSValue::FrequencyComponent); }
-    method angle:sym<math>($/)      { make $._type-check-expr($<math>, CSSValue::AngleComponent); }
-    method time:sym<math>($/)       { make $._type-check-expr($<math>, CSSValue::TimeComponent); }
-    method resolution:sym<math>($/) { make $._type-check-expr($<math>, CSSValue::ResolutionComponent); }
+    method length:sym<math>($/)     { make $._cast-expr($<math>, CSSValue::LengthComponent); }
+    method frequency:sym<math>($/)  { make $._cast-expr($<math>, CSSValue::FrequencyComponent); }
+    method angle:sym<math>($/)      { make $._cast-expr($<math>, CSSValue::AngleComponent); }
+    method time:sym<math>($/)       { make $._cast-expr($<math>, CSSValue::TimeComponent); }
+    method resolution:sym<math>($/) { make $._cast-expr($<math>, CSSValue::ResolutionComponent); }
 
 };

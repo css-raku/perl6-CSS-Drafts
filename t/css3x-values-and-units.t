@@ -4,8 +4,10 @@ use Test;
 use JSON::Tiny;
 use CSS::Grammar::Test;
 use CSS::Drafts::CSS3;
+use CSS::Writer;
 
 my $actions = CSS::Drafts::CSS3::Actions.new;
+my $writer = CSS::Writer.new;
 
 for 't/css3x-values-and-units.json'.IO.lines {
 
@@ -18,6 +20,7 @@ for 't/css3x-values-and-units.json'.IO.lines {
     CSS::Grammar::Test::parse-tests(
         CSS::Drafts::CSS3, $input, :$rule, :$actions,
         :suite<css3x-units>,
+        :$writer,
         :$expected );
 }
 
