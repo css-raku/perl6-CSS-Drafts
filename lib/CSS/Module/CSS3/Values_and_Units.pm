@@ -143,8 +143,14 @@ class CSS::Module::CSS3::Values_and_Units::Actions
 
     method toggle($/) { 
         return Any if $<expr>>>.ast.grep: {! .defined};
-        my $vals = $.list( $/ );
-        make $.func('toggle', $vals);
+        my $args = $.list( $/ ).map: {
+            # rule may have consumed argumments, e.g. font-family
+            .<expr>:exists && .<expr>.first({.<op> && .<op> eq ','})
+            ?? .<expr>.grep({!.<op> || .<op> ne ','}).map: { %( expr => [$_] ).item }
+            !! $_;
+        }
+
+        make $.func('toggle', $args);
     }
 
     method attr($/) {
