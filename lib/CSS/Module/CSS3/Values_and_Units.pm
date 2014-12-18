@@ -52,12 +52,37 @@ grammar CSS::Module::CSS3::Values_and_Units
 class CSS::Module::CSS3::Values_and_Units::Actions
     is CSS::Module::CSS3::_Base::Actions {
 
+    role Cast {
+        has $.cast is rw;
+    }
+
+    method cast($node is copy, :$cast is copy, :$type) {
+
+        $node = $.token($node, :$type)
+            if $type.defined;
+
+        $node.value does Cast
+            unless $node.value.can('cast');
+
+        # map units to base type. E.g. ms => time
+        if my $units-type = CSS::Grammar::AST::CSSUnits.enums{$cast} {
+            $cast = $units-type;
+        }
+
+        $node.value.cast = $cast if $cast.defined;
+
+        return $node;
+    }
+
     method length-units:sym<viewport>($/) { make $/.lc }
     method rel-font-units($/)             { make $/.lc }
     method angle-units($/)                { make $/.lc }
     method resolution-units($/)           { make $/.lc }
 
-    method math($/) { make $.func( 'calc', $<sum>.ast, :trait( $<sum>.ast.trait ), :arg-type<expr>) }
+    method math($/) {
+        make $.cast( $.func( 'calc', $<sum>.ast, :arg-type<expr>),
+                      :cast( $<sum>.ast.value.cast ) );
+    }
 
     method _coerce-types($lhs, $rhs) {
         return do {
@@ -110,13 +135,13 @@ class CSS::Module::CSS3::Values_and_Units::Actions
     method _cast-chained-expr($expr-ast) {
         my ($lhs-ast, @rhs) = @$expr-ast;
         my ($lhs) = $lhs-ast.values;
-        my $cast = $lhs.trait // $lhs.type;
+        my $cast = $lhs.cast // $lhs.type;
 
         for @rhs -> $op-ast, $rhs-ast {
             my ($op) = $op-ast.values;
             my ($rhs) = $rhs-ast.values;
 
-            my $rhs-type = $rhs.trait// $rhs.type;
+            my $rhs-type = $rhs.can('cast') && $rhs.cast || $rhs-ast.keys[0];
 
             $cast = $._cast-operands($op, $cast, $rhs-type);
             $lhs = $rhs;
@@ -127,13 +152,13 @@ class CSS::Module::CSS3::Values_and_Units::Actions
     method sum ($/) {
         my $expr = $.list($/);
         my $cast = $._cast-chained-expr($expr);
-        make $.token( $expr, :type<expr>, :trait($cast) );
+        make $.cast( $expr, :type<expr>, :$cast );
     }
 
     method product($/) {
         my $expr = $.list($/);
         my $cast = $._cast-chained-expr($expr);
-        make $.token( $expr, :type<expr>, :trait($cast) );
+        make $.cast( $expr, :type<expr>, :$cast );
     }
 
     method toggle-arg($/) {
@@ -171,15 +196,15 @@ class CSS::Module::CSS3::Values_and_Units::Actions
 
     method unit($/) {
         my $item = $/.caps[0].value.ast;
-        my $cast = $item.trait // $item.type
-            // ($item.units eq '%' && CSSValue::PercentageComponent);
-        make $.token( $item, :type($cast), :trait($cast) );
+        $item = $.cast( $item, :cast($item.key) )
+            unless $item.value.can('cast') && $item.value.cast;
+        make $item;
     }
 
     method _cast-expr($expr, $base-type) {
         my $expr-ast = $expr.ast;
 
-        my $expr-type = $expr-ast.trait;
+        my $expr-type = $expr-ast.value.cast;
         unless $expr-type.defined {
             $.warning("incompatible types in expression", ~$/);
             return Any;
@@ -191,7 +216,7 @@ class CSS::Module::CSS3::Values_and_Units::Actions
             return Any;
         }
 
-        $expr-ast.trait = $cast;
+        $expr-ast.value.cast = $cast;
         return $expr-ast;
     }
 
