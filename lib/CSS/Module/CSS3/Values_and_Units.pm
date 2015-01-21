@@ -7,11 +7,11 @@ class CSS::Module::CSS3::Values_and_Units::Actions {...}
 use CSS::Grammar::AST :CSSValue;
 use CSS::Grammar::CSS3;
 use CSS::Grammar::Actions;
-use CSS::Specification::_Base::CSS3;
-use CSS::Specification::_Base::CSS3::Actions;
+use CSS::Specification::Terms::CSS3;
+use CSS::Specification::Terms::CSS3::Actions;
 
 grammar CSS::Module::CSS3::Values_and_Units
-    is CSS::Specification::_Base::CSS3
+    is CSS::Specification::Terms::CSS3
     is CSS::Grammar::CSS3 {
 
     # -- Units -- #
@@ -45,7 +45,7 @@ grammar CSS::Module::CSS3::Values_and_Units
     rule resolution:sym<math> {<math>}
 
     # implement proforma rules for attr() and toggle()
-    # - see <val> rule in CSS::Specification::_Base.
+    # - see <val> rule in CSS::Specification::Terms.
     rule toggle-arg { <val($*EXPR, $*USAGE)> }
     rule toggle     {:i 'toggle(' <expr=.toggle-arg> +% ',' ')' }
     rule attr       {:i 'attr(' <qname> [[<.type>|<.unit-name>] && <keyw>]? [ <op(',')> <val($*EXPR, $*USAGE)> ]? ')' }
@@ -54,7 +54,7 @@ grammar CSS::Module::CSS3::Values_and_Units
 };
 
 class CSS::Module::CSS3::Values_and_Units::Actions
-    is CSS::Specification::_Base::CSS3::Actions
+    is CSS::Specification::Terms::CSS3::Actions
     is CSS::Grammar::Actions {
 
     role Cast {
