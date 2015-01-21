@@ -5,10 +5,14 @@ use v6;
 #
 class CSS::Module::CSS3::Values_and_Units::Actions {...}
 use CSS::Grammar::AST :CSSValue;
-use CSS::Module::CSS3::_Base;
+use CSS::Grammar::CSS3;
+use CSS::Grammar::Actions;
+use CSS::Specification::_Base::CSS3;
+use CSS::Specification::_Base::CSS3::Actions;
 
 grammar CSS::Module::CSS3::Values_and_Units
-    is CSS::Module::CSS3::_Base {
+    is CSS::Specification::_Base::CSS3
+    is CSS::Grammar::CSS3 {
 
     # -- Units -- #
 
@@ -50,7 +54,8 @@ grammar CSS::Module::CSS3::Values_and_Units
 };
 
 class CSS::Module::CSS3::Values_and_Units::Actions
-    is CSS::Module::CSS3::_Base::Actions {
+    is CSS::Specification::_Base::CSS3::Actions
+    is CSS::Grammar::Actions {
 
     role Cast {
         has $.cast is rw;

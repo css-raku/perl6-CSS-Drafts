@@ -3,7 +3,10 @@ use v6;
 # CSS3 Background and Borders Extension Module
 # - reference: http://www.w3.org/TR/2012/CR-css3-background-20120724/
 #
-use CSS::Module::CSS3::_Base;
+use CSS::Specification::_Base::CSS3;
+use CSS::Specification::_Base::CSS3::Actions;
+use CSS::Grammar::CSS3;
+use CSS::Grammar::Actions;
 
 class CSS::Module::CSS3::Backgrounds_and_Borders::Actions {...}
 
@@ -13,7 +16,8 @@ use CSS::Module::CSS3::Backgrounds_and_Borders::Spec::Actions;
 
 grammar CSS::Module::CSS3::Backgrounds_and_Borders:ver<20120724.000>
     is CSS::Module::CSS3::Backgrounds_and_Borders::Spec::Grammar
-    is CSS::Module::CSS3::_Base
+    is CSS::Specification::_Base::CSS3
+    is CSS::Grammar::CSS3
     does CSS::Module::CSS3::Backgrounds_and_Borders::Spec::Interface {
 
     rule image      { <uri> }
@@ -29,7 +33,8 @@ grammar CSS::Module::CSS3::Backgrounds_and_Borders:ver<20120724.000>
 
 class CSS::Module::CSS3::Backgrounds_and_Borders::Actions
     is CSS::Module::CSS3::Backgrounds_and_Borders::Spec::Actions
-    is CSS::Module::CSS3::_Base::Actions
+    is CSS::Specification::_Base::CSS3::Actions
+    is CSS::Grammar::Actions
     does CSS::Module::CSS3::Backgrounds_and_Borders::Spec::Interface {
 
     method image($/)      { make $<uri>.ast }

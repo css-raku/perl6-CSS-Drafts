@@ -2,6 +2,6 @@
     "name"        : "CSS::Drafts",
     "version"     : "*",
     "description" : "Perl 6 CSS draft modules",
-    "depends"     : [ "CSS::Module", "CSS::Specification", "JSON::Tiny"  ],
+    "depends"     : [ "CSS::Specification", "JSON::Tiny"  ],
     "source-url"  : "git://github.com/p6-css/perl6-CSS-Drafts.git"
 }
