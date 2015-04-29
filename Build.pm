@@ -17,12 +17,12 @@ class Build is Panda::Builder {
                     actions => 'Actions',
                     grammar => 'Grammar' {
                     my ($type, $subclass) = .kv;
-                    my $name = (<CSS Module>, @$class-isa, <Spec>,  $subclass).join('::');
+                    my $name = (<CSS Module>, @$class-isa, <Spec>,  $subclass).flat.join('::');
 
-                    my $class-dir = (<lib CSS Module>, @$class-isa, <Spec>).join('/');
+                    my $class-dir = $*SPEC.catdir(<lib CSS Module>, @$class-isa, <Spec>);
                     mkdir $class-dir;
 
-                    my $class-path = $class-dir ~ '/' ~ $subclass ~ '.pm';
+                    my $class-path = $*SPEC.catfile($class-dir, $subclass ~ '.pm');
 
                     say "Building $input-spec => $name";
                     temp $*IN  = open $input-spec, :r;
