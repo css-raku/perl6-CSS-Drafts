@@ -9,7 +9,7 @@ class Build is Panda::Builder {
     method build($where) {
 
         indir $where, {
-            for ('etc/css3x-background-20120724.txt' => <CSS3 Backgrounds_and_Borders>,
+            for (<etc css3x-background-20120724.txt> => <CSS3 Backgrounds_and_Borders>,
                 ) {
                 my ($input-spec, $class-isa) = .kv;
 
@@ -24,8 +24,9 @@ class Build is Panda::Builder {
 
                     my $class-path = $*SPEC.catfile($class-dir, $subclass ~ '.pm');
 
-                    say "Building $input-spec => $name";
-                    temp $*IN  = open $input-spec, :r;
+                    my $input-path = $*SPEC.catfile( |@$input-spec );
+                    say "Building $input-path => $name";
+                    temp $*IN  = open $input-path, :r;
                     temp $*OUT = open $class-path, :w;
 
                     CSS::Specification::Build::generate( $type, $name );
