@@ -4,4 +4,16 @@
     "description" : "Perl 6 CSS draft modules",
     "depends"     : [ "CSS::Module", "CSS::Specification", "JSON::Tiny"  ],
     "source-url"  : "git://github.com/p6-css/perl6-CSS-Drafts.git"
+    "provides"    : {
+        "CSS::Drafts::CSS3" : "lib/CSS/Drafts/CSS3.pm",
+        "CSS::Drafts::MetaData" : "lib/CSS/Drafts/MetaData.pm",
+
+        "CSS::Module::CSS3::Backgrounds_and_Borders" : "lib/CSS/Module/CSS3/Backgrounds_and_Borders.pm",
+        "CSS::Module::CSS3::Backgrounds_and_Borders::Actions" : "lib/CSS/Module/CSS3/Backgrounds_and_Borders.pm",
+        "CSS::Module::CSS3::Backgrounds_and_Borders::Spec::Actions" : "lib/CSS/Module/CSS3/Backgrounds_and_Borders/Spec/Actions.pm",
+        "CSS::Module::CSS3::Backgrounds_and_Borders::Spec::Grammar" : "lib/CSS/Module/CSS3/Backgrounds_and_Borders/Spec/Grammar.pm",
+        "CSS::Module::CSS3::Backgrounds_and_Borders::Spec::Interface" : "lib/CSS/Module/CSS3/Backgrounds_and_Borders/Spec/Interface.pm",
+
+        "CSS::Module::CSS3::Values_and_Units" : "lib/CSS/Module/CSS3/Values_and_Units.pm"
+     }
 }
