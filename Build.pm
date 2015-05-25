@@ -3,7 +3,7 @@ use v6;
 use CSS::Specification::Build;
 use Panda::Builder;
 use Panda::Common;
-use CSS::Module::MetaData;
+use CSS::Module::CSS3::MetaData;
 
 class Build is Panda::Builder {
 
@@ -11,8 +11,7 @@ class Build is Panda::Builder {
 
         indir $where, {
 
-            my %props = $CSS::Module::MetaData::property.list;
-            my $level = 3.0;
+            my %props = $CSS::Module::CSS3::MetaData::property.list;
 
             for (<etc css3x-background-20120724.txt> => <CSS3 Backgrounds_and_Borders>,
                 ) {
@@ -43,12 +42,11 @@ class Build is Panda::Builder {
                     my $prop-name = %detail<name>:delete;
                     %props{$prop-name}{.key} = .value
                         for %detail.pairs;
-                    %props{$prop-name}<level> //= $level;
                 }
 
-                my $class-dir = $*SPEC.catdir(<lib CSS Drafts>);
+                my $class-dir = $*SPEC.catdir(<lib CSS Drafts CSS3>);
                 my $class-path = $*SPEC.catfile( $class-dir, 'MetaData.pm' );
-                my $class-name = 'CSS::Drafts::MetaData';
+                my $class-name = 'CSS::Drafts::CSS3::MetaData';
                 say "Building $class-name";
                 {
                     my $*OUT = open $class-path, :w;
