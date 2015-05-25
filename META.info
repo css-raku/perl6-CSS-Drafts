@@ -6,7 +6,7 @@
     "source-url"  : "git://github.com/p6-css/perl6-CSS-Drafts.git"
     "provides"    : {
         "CSS::Drafts::CSS3" : "lib/CSS/Drafts/CSS3.pm",
-        "CSS::Drafts::MetaData" : "lib/CSS/Drafts/MetaData.pm",
+        "CSS::Drafts::CSS3::MetaData" : "lib/CSS/Drafts/CSS3/MetaData.pm",
 
         "CSS::Module::CSS3::Backgrounds_and_Borders" : "lib/CSS/Module/CSS3/Backgrounds_and_Borders.pm",
         "CSS::Module::CSS3::Backgrounds_and_Borders::Actions" : "lib/CSS/Module/CSS3/Backgrounds_and_Borders.pm",
