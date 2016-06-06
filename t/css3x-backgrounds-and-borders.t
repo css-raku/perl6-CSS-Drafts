@@ -1,7 +1,7 @@
 #!/usr/bin/env perl6
 
 use Test;
-use JSON::Tiny;
+use JSON::Fast;
 
 use CSS::Grammar::Test;
 use CSS::Drafts::CSS3;

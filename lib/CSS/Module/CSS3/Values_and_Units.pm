@@ -3,15 +3,14 @@ use v6;
 # This class implements CSS3 Values and Units Module Level 3
 # - reference: http://www.w3.org/TR/2013/CR-css3-values-20130404/
 #
-class CSS::Module::CSS3::Values_and_Units::Actions {...}
 use CSS::Grammar::AST :CSSValue;
 use CSS::Grammar::CSS3;
 use CSS::Grammar::Actions;
-use CSS::Specification::Terms::CSS3;
-use CSS::Specification::Terms::CSS3::Actions;
+use CSS::Specification::Terms;
+use CSS::Specification::Terms::Actions;
 
 grammar CSS::Module::CSS3::Values_and_Units
-    is CSS::Specification::Terms::CSS3
+    is CSS::Specification::Terms
     is CSS::Grammar::CSS3 {
 
     # -- Units -- #
@@ -54,7 +53,7 @@ grammar CSS::Module::CSS3::Values_and_Units
 };
 
 class CSS::Module::CSS3::Values_and_Units::Actions
-    is CSS::Specification::Terms::CSS3::Actions
+    is CSS::Specification::Terms::Actions
     is CSS::Grammar::Actions {
 
     role Cast {

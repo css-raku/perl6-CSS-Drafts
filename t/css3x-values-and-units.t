@@ -1,7 +1,7 @@
 #!/usr/bin/env perl6
 
 use Test;
-use JSON::Tiny;
+use JSON::Fast;
 use CSS::Grammar::Test;
 use CSS::Drafts::CSS3;
 use CSS::Writer;
@@ -24,4 +24,4 @@ for 't/css3x-values-and-units.json'.IO.lines {
         :$expected );
 }
 
-done;
+done-testing;
