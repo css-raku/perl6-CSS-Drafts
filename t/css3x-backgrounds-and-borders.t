@@ -41,4 +41,4 @@ for 't/css3x-backgrounds-and-borders.json'.IO.lines {
 	:expected(%css21_expected) );
 }
 
-done;
+done-testing;
