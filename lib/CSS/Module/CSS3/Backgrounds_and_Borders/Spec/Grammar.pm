@@ -22,7 +22,7 @@ grammar CSS::Module::CSS3::Backgrounds_and_Borders::Spec::Grammar {
 
     #| background-image: [ <image> | none ]#
     rule decl:sym<background-image> {:i (background\-image) ':' <val( rx{ <expr=.expr-background-image> }, &?ROUTINE.WHY)> }
-    rule expr-background-image {:i [ [ <image> | none & <keyw> ] ] +% <op(',')> }
+    rule expr-background-image {:i [ [ <image> || none & <keyw> ] ] +% <op(',')> }
 
     #| background-origin: <box>#
     rule decl:sym<background-origin> {:i (background\-origin) ':' <val( rx{ <expr=.expr-background-origin> }, &?ROUTINE.WHY)> }
@@ -34,11 +34,11 @@ grammar CSS::Module::CSS3::Backgrounds_and_Borders::Spec::Grammar {
 
     #| background-repeat: [ repeat-x | repeat-y | [ repeat | space | round | no-repeat ]{1,2} ]#
     rule decl:sym<background-repeat> {:i (background\-repeat) ':' <val( rx{ <expr=.expr-background-repeat> }, &?ROUTINE.WHY)> }
-    rule expr-background-repeat {:i [ [ [ repeat\-x | repeat\-y ] & <keyw> | [ [ repeat | space | round | no\-repeat ] & <keyw> ]**1..2 ] ] +% <op(',')> }
+    rule expr-background-repeat {:i [ [ [ repeat\-x | repeat\-y ] & <keyw> || [ [ repeat | space | round | no\-repeat ] & <keyw> ]**1..2 ] ] +% <op(',')> }
 
     #| background-size: [ [ <length> | <percentage> | auto ]{1,2} ]#
     rule decl:sym<background-size> {:i (background\-size) ':' <val( rx{ <expr=.expr-background-size> }, &?ROUTINE.WHY)> }
-    rule expr-background-size {:i [ [ [ <length> | <percentage> | auto & <keyw> ] ]**1..2 ] +% <op(',')> }
+    rule expr-background-size {:i [ [ [ <length> || <percentage> || auto & <keyw> ] ]**1..2 ] +% <op(',')> }
 
     #| border: <'border-width'> || <'border-style'> || <color>
     rule decl:sym<border> {:i (border) ':' <val( rx{ <expr=.expr-border> }, &?ROUTINE.WHY)> }
@@ -50,11 +50,11 @@ grammar CSS::Module::CSS3::Backgrounds_and_Borders::Spec::Grammar {
 
     #| border-image: <‘border-image-source’> || <‘border-image-slice’> [ / <‘border-image-width’> | / <‘border-image-width’>? / <‘border-image-outset’> ]? || <‘border-image-repeat’>
     rule decl:sym<border-image> {:i (border\-image) ':' <val( rx{ <expr=.expr-border-image> }, &?ROUTINE.WHY)> }
-    rule expr-border-image {:i :my @*SEEN; [ <expr-border-image-source> <!seen(0)> | <expr-border-image-slice> [ [ <op('/')> <expr-border-image-width> | <op('/')> <expr-border-image-width>? <op('/')> <expr-border-image-outset> ] ]? <!seen(1)> | <expr-border-image-repeat> <!seen(2)> ]+ }
+    rule expr-border-image {:i :my @*SEEN; [ <expr-border-image-source> <!seen(0)> | <expr-border-image-slice> [ [ <op('/')> <expr-border-image-width> || <op('/')> <expr-border-image-width>? <op('/')> <expr-border-image-outset> ] ]? <!seen(1)> | <expr-border-image-repeat> <!seen(2)> ]+ }
 
     #| border-image-outset: [ <length> | <number> ]{1,4}
     rule decl:sym<border-image-outset> {:i (border\-image\-outset) ':' <val( rx{ <expr=.expr-border-image-outset>**1..4 }, &?ROUTINE.WHY)> }
-    rule expr-border-image-outset {:i [ [ <length> | <number> ] ] }
+    rule expr-border-image-outset {:i [ [ <length> || <number> ] ] }
 
     #| border-image-repeat: [ stretch | repeat | round | space ]{1,2}
     rule decl:sym<border-image-repeat> {:i (border\-image\-repeat) ':' <val( rx{ <expr=.expr-border-image-repeat> }, &?ROUTINE.WHY)> }
@@ -62,19 +62,19 @@ grammar CSS::Module::CSS3::Backgrounds_and_Borders::Spec::Grammar {
 
     #| border-image-slice: [<number> | <percentage>]{1,4} && fill?
     rule decl:sym<border-image-slice> {:i (border\-image\-slice) ':' <val( rx{ <expr=.expr-border-image-slice> }, &?ROUTINE.WHY)> }
-    rule expr-border-image-slice {:i :my @*SEEN; [ [ [ <number> | <percentage> ] ]**1..4 <!seen(0)> | [ fill & <keyw> ]? <!seen(1)> ]**2 }
+    rule expr-border-image-slice {:i :my @*SEEN; [ [ [ <number> || <percentage> ] ]**1..4 <!seen(0)> | [ fill & <keyw> ]? <!seen(1)> ]**2 }
 
     #| border-image-source: none | <image>
     rule decl:sym<border-image-source> {:i (border\-image\-source) ':' <val( rx{ <expr=.expr-border-image-source> }, &?ROUTINE.WHY)> }
-    rule expr-border-image-source {:i [ none & <keyw> | <image> ] }
+    rule expr-border-image-source {:i [ none & <keyw> || <image> ] }
 
     #| border-image-width: [ <length> | <percentage> | <number> | auto ]{1,4}
     rule decl:sym<border-image-width> {:i (border\-image\-width) ':' <val( rx{ <expr=.expr-border-image-width>**1..4 }, &?ROUTINE.WHY)> }
-    rule expr-border-image-width {:i [ [ <length> | <percentage> | <number> | auto & <keyw> ] ] }
+    rule expr-border-image-width {:i [ [ <length> || <percentage> || <number> || auto & <keyw> ] ] }
 
     #| border-radius: [ <length> | <percentage> ]{1,4} [ / [ <length> | <percentage> ]{1,4} ]?
     rule decl:sym<border-radius> {:i (border\-radius) ':' <val( rx{ <expr=.expr-border-radius> }, &?ROUTINE.WHY)> }
-    rule expr-border-radius {:i [ [ <length> | <percentage> ] ]**1..4 [ <op('/')> [ [ <length> | <percentage> ] ]**1..4 ]? }
+    rule expr-border-radius {:i [ [ <length> || <percentage> ] ]**1..4 [ <op('/')> [ [ <length> || <percentage> ] ]**1..4 ]? }
 
     #| border-style: [ none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset ]{1,4}
     rule decl:sym<border-style> {:i (border\-style) ':' <val( rx{ <expr=.expr-border-style>**1..4 }, &?ROUTINE.WHY)> }
@@ -114,19 +114,19 @@ grammar CSS::Module::CSS3::Backgrounds_and_Borders::Spec::Grammar {
 
     #| border-top-left-radius: [ <length> | <percentage> ]{1,2}
     rule decl:sym<border-top-left-radius> {:i (border\-top\-left\-radius) ':' <val( rx{ <expr=.expr-border-top-left-radius> }, &?ROUTINE.WHY)> }
-    rule expr-border-top-left-radius {:i [ [ <length> | <percentage> ] ]**1..2 }
+    rule expr-border-top-left-radius {:i [ [ <length> || <percentage> ] ]**1..2 }
 
     #| border-top-right-radius: [ <length> | <percentage> ]{1,2}
     rule decl:sym<border-top-right-radius> {:i (border\-top\-right\-radius) ':' <val( rx{ <expr=.expr-border-top-right-radius> }, &?ROUTINE.WHY)> }
-    rule expr-border-top-right-radius {:i [ [ <length> | <percentage> ] ]**1..2 }
+    rule expr-border-top-right-radius {:i [ [ <length> || <percentage> ] ]**1..2 }
 
     #| border-bottom-right-radius: [ <length> | <percentage> ]{1,2}
     rule decl:sym<border-bottom-right-radius> {:i (border\-bottom\-right\-radius) ':' <val( rx{ <expr=.expr-border-bottom-right-radius> }, &?ROUTINE.WHY)> }
-    rule expr-border-bottom-right-radius {:i [ [ <length> | <percentage> ] ]**1..2 }
+    rule expr-border-bottom-right-radius {:i [ [ <length> || <percentage> ] ]**1..2 }
 
     #| border-bottom-left-radius: [ <length> | <percentage> ]{1,2}
     rule decl:sym<border-bottom-left-radius> {:i (border\-bottom\-left\-radius) ':' <val( rx{ <expr=.expr-border-bottom-left-radius> }, &?ROUTINE.WHY)> }
-    rule expr-border-bottom-left-radius {:i [ [ <length> | <percentage> ] ]**1..2 }
+    rule expr-border-bottom-left-radius {:i [ [ <length> || <percentage> ] ]**1..2 }
 
     #| border-top-style: [ none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset ]
     rule decl:sym<border-top-style> {:i (border\-top\-style) ':' <val( rx{ <expr=.expr-border-top-style> }, &?ROUTINE.WHY)> }
@@ -146,23 +146,23 @@ grammar CSS::Module::CSS3::Backgrounds_and_Borders::Spec::Grammar {
 
     #| border-top-width: [ <length> | thin | medium | thick ]
     rule decl:sym<border-top-width> {:i (border\-top\-width) ':' <val( rx{ <expr=.expr-border-top-width> }, &?ROUTINE.WHY)> }
-    rule expr-border-top-width {:i [ [ <length> | [ thin | medium | thick ] & <keyw> ] ] }
+    rule expr-border-top-width {:i [ [ <length> || [ thin | medium | thick ] & <keyw> ] ] }
 
     #| border-right-width: [ <length> | thin | medium | thick ]
     rule decl:sym<border-right-width> {:i (border\-right\-width) ':' <val( rx{ <expr=.expr-border-right-width> }, &?ROUTINE.WHY)> }
-    rule expr-border-right-width {:i [ [ <length> | [ thin | medium | thick ] & <keyw> ] ] }
+    rule expr-border-right-width {:i [ [ <length> || [ thin | medium | thick ] & <keyw> ] ] }
 
     #| border-bottom-width: [ <length> | thin | medium | thick ]
     rule decl:sym<border-bottom-width> {:i (border\-bottom\-width) ':' <val( rx{ <expr=.expr-border-bottom-width> }, &?ROUTINE.WHY)> }
-    rule expr-border-bottom-width {:i [ [ <length> | [ thin | medium | thick ] & <keyw> ] ] }
+    rule expr-border-bottom-width {:i [ [ <length> || [ thin | medium | thick ] & <keyw> ] ] }
 
     #| border-left-width: [ <length> | thin | medium | thick ]
     rule decl:sym<border-left-width> {:i (border\-left\-width) ':' <val( rx{ <expr=.expr-border-left-width> }, &?ROUTINE.WHY)> }
-    rule expr-border-left-width {:i [ [ <length> | [ thin | medium | thick ] & <keyw> ] ] }
+    rule expr-border-left-width {:i [ [ <length> || [ thin | medium | thick ] & <keyw> ] ] }
 
     #| border-width: [ <length> | thin | medium | thick ]{1,4}
     rule decl:sym<border-width> {:i (border\-width) ':' <val( rx{ <expr=.expr-border-width>**1..4 }, &?ROUTINE.WHY)> }
-    rule expr-border-width {:i [ [ <length> | [ thin | medium | thick ] & <keyw> ] ] }
+    rule expr-border-width {:i [ [ <length> || [ thin | medium | thick ] & <keyw> ] ] }
 
     #| box-decoration-break: slice | clone
     rule decl:sym<box-decoration-break> {:i (box\-decoration\-break) ':' <val( rx{ <expr=.expr-box-decoration-break> }, &?ROUTINE.WHY)> }
@@ -170,5 +170,5 @@ grammar CSS::Module::CSS3::Backgrounds_and_Borders::Spec::Grammar {
 
     #| box-shadow: none | <shadow>#
     rule decl:sym<box-shadow> {:i (box\-shadow) ':' <val( rx{ <expr=.expr-box-shadow> }, &?ROUTINE.WHY)> }
-    rule expr-box-shadow {:i [ none & <keyw> | <shadow> +% <op(',')> ] }
+    rule expr-box-shadow {:i [ none & <keyw> || <shadow> +% <op(',')> ] }
 }
