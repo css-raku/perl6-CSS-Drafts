@@ -1,11 +1,9 @@
 use v6;
 
 use CSS::Specification::Build;
-use Panda::Builder;
-use Panda::Common;
 use CSS::Module::CSS3::Metadata;
 
-class Build is Panda::Builder {
+class Build {
 
     method build($where) {
 
