@@ -88,7 +88,7 @@ class CSS::Module::CSS3::Values_and_Units::Actions
                       :cast( $<sum>.ast.value.cast ) );
     }
 
-    method _coerce-types($lhs, $rhs) {
+    method !coerce-types($lhs, $rhs) {
         return do {
             when $lhs eq $rhs                          {$lhs}
             when $lhs eq CSSValue::PercentageComponent {$rhs} 
@@ -100,11 +100,11 @@ class CSS::Module::CSS3::Values_and_Units::Actions
     }
 
     multi method _cast-operands('+', $lhs, $rhs) {
-        return $._coerce-types($lhs, $rhs);
+        return self!coerce-types($lhs, $rhs);
     }
 
     multi method _cast-operands('-', $lhs, $rhs) {
-        return $._coerce-types($lhs, $rhs);
+        return self!coerce-types($lhs, $rhs);
     }
 
     multi method _cast-operands('*', $lhs, $rhs) {
@@ -214,7 +214,7 @@ class CSS::Module::CSS3::Values_and_Units::Actions
             return Any;
         }
 
-        my $cast = $._coerce-types($base-type, $expr-type);
+        my $cast = self!coerce-types($base-type, $expr-type);
         unless $cast.defined {
             $.warning("expected an expresssion of type {$base-type}, got: {$expr-type}", ~$expr);
             return Any;
