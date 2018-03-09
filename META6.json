@@ -4,7 +4,7 @@
     "auth"        : "github:p6-css",
     "description" : "Perl 6 CSS draft modules",
     "depends"     : [ "CSS::Module", "CSS::Specification", "JSON::Fast"  ],
-    "source-url"  : "git://github.com/p6-css/perl6-CSS-Drafts.git"
+    "source-url"  : "git://github.com/p6-css/perl6-CSS-Drafts.git",
     "provides"    : {
         "CSS::Drafts::CSS3" : "lib/CSS/Drafts/CSS3.pm",
         "CSS::Drafts::CSS3::Metadata" : "lib/CSS/Drafts/CSS3/Metadata.pm",

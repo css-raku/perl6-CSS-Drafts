@@ -17,7 +17,7 @@ for 't/css3x-values-and-units.json'.IO.lines {
     my ($rule, $expected) = @( from-json($_) );
     my $input = $expected<input>;
 
-    CSS::Grammar::Test::parse-tests(
+    &CSS::Grammar::Test::parse-tests(
         CSS::Drafts::CSS3, $input, :$rule, :$actions,
         :suite<css3x-units>,
         :$writer,

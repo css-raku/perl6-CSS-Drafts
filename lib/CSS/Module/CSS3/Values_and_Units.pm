@@ -3,7 +3,6 @@ use v6;
 # This class implements CSS3 Values and Units Module Level 3
 # - reference: http://www.w3.org/TR/2013/CR-css3-values-20130404/
 #
-use CSS::Grammar::AST :CSSValue;
 use CSS::Grammar::CSS3;
 use CSS::Grammar::Actions;
 use CSS::Specification::Terms;
@@ -51,6 +50,8 @@ grammar CSS::Module::CSS3::Values_and_Units
     rule proforma:sym<toggle> { <toggle> }
     rule proforma:sym<attr>   { <attr> }
 };
+
+use CSS::Grammar::AST :CSSValue;
 
 class CSS::Module::CSS3::Values_and_Units::Actions
     is CSS::Specification::Terms::Actions
@@ -172,14 +173,14 @@ class CSS::Module::CSS3::Values_and_Units::Actions
 
     method toggle($/) { 
         return Any if $<expr>>>.ast.grep: {! .defined};
-        my $args = $.list( $/ ).map: {
-            # rule may have consumed argumments, e.g. font-family
+        my @args = $.list( $/ ).map: {
+            # rule may have consumed arguments, e.g. font-family
             .<expr>:exists && .<expr>.first({.<op> && .<op> eq ','})
             ?? .<expr>.grep({!.<op> || .<op> ne ','}).map: { %( expr => [$_] ).item }
             !! $_;
         }
 
-        make $.func('toggle', $args);
+        make $.func('toggle', @args);
     }
 
     method attr($/) {
